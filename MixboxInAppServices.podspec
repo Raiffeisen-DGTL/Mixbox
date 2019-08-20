@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
   s.dependency 'MixboxIpcSbtuiHost'
   s.dependency 'MixboxUiKit'
   s.dependency 'MixboxBuiltinIpc'
+  s.dependency 'MixboxAnyCodable'
 
   s.frameworks = 'IOKit', 'UIKit'
 end
