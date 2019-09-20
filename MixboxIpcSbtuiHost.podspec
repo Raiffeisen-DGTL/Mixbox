@@ -14,5 +14,5 @@ Pod::Spec.new do |s|
   s.source_files           = 'Frameworks/IpcSbtuiHost/**/*.{swift,h,m}'
   
   s.dependency 'MixboxIpc'
-  s.dependency 'SBTUITestTunnel/Server'
+  s.dependency 'SBTUITestTunnel/Server', '3.0.6'
 end
