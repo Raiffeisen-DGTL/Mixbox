@@ -16,6 +16,8 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
     public let fakeCellsSwizzling: FakeCellsSwizzling
     public let collectionViewCellSwizzler: CollectionViewCellSwizzler
     public let collectionViewSwizzler: CollectionViewSwizzler
+    public let tableViewCellSwizzler: TableViewCellSwizzler
+    public let tableViewSwizzler: TableViewSwizzler
     public let fakeCellManager: FakeCellManager
     
     private let networkMockingBootstrappingType: NetworkMockingBootstrappingType
@@ -88,10 +90,20 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
         collectionViewSwizzler = CollectionViewSwizzlerImpl(
             assertingSwizzler: assertingSwizzler
         )
+
+        tableViewCellSwizzler = TableViewCellSwizzlerImpl(
+            assertingSwizzler: assertingSwizzler,
+            shouldAddAssertionForCallingIsHiddenOnFakeCell: shouldAddAssertionForCallingIsHiddenOnFakeCell)
+
+        tableViewSwizzler = TableViewSizzlerImpl(
+            assertingSwizzler: assertingSwizzler
+        )
         
         fakeCellsSwizzling = FakeCellsSwizzlingImpl(
             collectionViewCellSwizzler: collectionViewCellSwizzler,
-            collectionViewSwizzler: collectionViewSwizzler
+            collectionViewSwizzler: collectionViewSwizzler,
+            tableViewCellSwizzler: tableViewCellSwizzler,
+            tableViewSwizzler: tableViewSwizzler
         )
         
         fakeCellManager = FakeCellManagerImpl()

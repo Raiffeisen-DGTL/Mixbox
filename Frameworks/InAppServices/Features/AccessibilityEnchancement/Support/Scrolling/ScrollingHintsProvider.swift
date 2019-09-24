@@ -175,6 +175,25 @@ final class ScrollingHintsProvider {
                 // The fake cell has no parent, but it has a reference
                 // to the collection view
                 pointer = parentCollectionView
+            } else if let cell = viewFromPointer as? UITableViewCell,
+                let parentCollectionView = cell.mb_fakeCellInfo?.parentTableView
+            {
+                // Handle fake cell
+                if parentCollectionView.xScrollIsPossible || parentCollectionView.yScrollIsPossible {
+                    scrollingInstructions.append(
+                        ScrollingInstruction(
+                            scrollView: parentCollectionView,
+                            targetRect: frame(ofView: cell, inView: parentCollectionView),
+                            targetViewUniqueIdentifier: nil
+                        )
+                    )
+
+                    viewToScrollTo = parentCollectionView
+                }
+
+                // The fake cell has no parent, but it has a reference
+                // to the collection view
+                pointer = parentCollectionView
             } else {
                 // Handle other views
                 if let scrollView = viewFromPointer as? UIScrollView, viewToScrollTo != scrollView {

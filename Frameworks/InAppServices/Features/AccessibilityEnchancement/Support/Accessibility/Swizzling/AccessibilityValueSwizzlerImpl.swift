@@ -148,7 +148,24 @@ public final class AccessibilityValueSwizzlerImpl: AccessibilityValueSwizzler {
         this: NSObject?,
         originalImplementation: () -> (NSString?)) -> NSString?
     {
+
         let originalAccessibilityValue = unwrapAccessibilityValue(originalImplementation)
+        let uiAccessibilityElementMockView = NSClassFromString("UIAccessibilityElementMockView")!
+
+        if this?.isKind(of: uiAccessibilityElementMockView) == true, let value = this?.perform(NSSelectorFromString("view")) as? Unmanaged<AnyObject>, let view = value.takeUnretainedValue() as? UIView {
+            let value = EnhancedAccessibilityValue(
+                originalAccessibilityValue: originalAccessibilityValue as String,
+                uniqueIdentifier: view.uniqueIdentifier,
+                isDefinitelyHidden: view.isDefinitelyHidden,
+                text: view.testabilityValue_text(),
+                customValues: view.testability_customValues.dictionary
+            )
+
+            AccessibilityUniqueObjectMap.shared.register(object: view)
+
+            return (value.toAccessibilityValue() as NSString?) ?? originalAccessibilityValue
+        }
+
         guard let view = this as? UIView else {
             return originalAccessibilityValue
         }

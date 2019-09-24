@@ -8,13 +8,12 @@ final class ScrollingHintIpcMethodHandler: IpcMethodHandler {
     
     func handle(arguments: String, completion: @escaping (ScrollingHint) -> ()) {
         let viewId = arguments
-        
-        guard let view = AccessibilityUniqueObjectMap.shared.locate(uniqueIdentifier: viewId) as? UIView else {
-            completion(.internalError("Вьюшка \(viewId) не найдена"))
-            return
-        }
-        
         DispatchQueue.main.async {
+            guard let view = AccessibilityUniqueObjectMap.shared.locate(uniqueIdentifier: viewId) as? UIView else {
+                completion(.internalError("Вьюшка \(viewId) не найдена"))
+                return
+            }
+
             let result = ScrollingHintsProvider.instance.scrollingHint(forScrollingToView: view)
             completion(result)
         }

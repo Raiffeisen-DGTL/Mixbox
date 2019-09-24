@@ -17,6 +17,19 @@
 
 @end
 
+@interface UITableViewCell (ObjCInterfacesForFakeCells)
+
+- (BOOL)_isHiddenForReuse;
+- (BOOL)_setHiddenForReuse:(BOOL)isHiddenForReuse;
+
+@end
+
+@interface UITableView (ObjCInterfacesForFakeCells)
+
+-(void)_reuseTableViewCell:(id)arg1 withIndexPath:(id)arg2 didEndDisplaying:(BOOL)arg3;
+
+@end
+
 #endif
 
 #endif

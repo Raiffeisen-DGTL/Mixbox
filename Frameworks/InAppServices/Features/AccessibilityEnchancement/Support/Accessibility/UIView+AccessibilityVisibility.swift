@@ -38,10 +38,20 @@ import MixboxTestability
             // but the cells they prepresent) can appear on screen after scrolling.
             //
             // This is how collection view works. So we should ignore isHidden for them.
-            let parentCollectionView = (view as? UICollectionViewCell)?.mb_fakeCellInfo?.parentCollectionView
+            var parrentListView: UIView?
+
+            if let tableView = (view as? UITableViewCell)?.mb_fakeCellInfo?.parentTableView {
+                parrentListView = tableView
+            }
+            if let collectionView = (view as? UICollectionViewCell)?.mb_fakeCellInfo?.parentCollectionView {
+                parrentListView = collectionView
+            }
             
             let currentViewIsHidden: Bool
             if let cell = view as? UICollectionViewCell, cell.mb_isFakeCell() {
+                // Fake cells can have isHidden = true and have zero size.
+                currentViewIsHidden = view.alpha < alphaThreshold
+            } else if let cell = view as? UITableViewCell, cell.mb_isFakeCell() {
                 // Fake cells can have isHidden = true and have zero size.
                 currentViewIsHidden = view.alpha < alphaThreshold
             } else {
@@ -55,7 +65,7 @@ import MixboxTestability
                 return true
             }
             
-            pointer = view.superview ?? parentCollectionView
+            pointer = view.superview ?? parrentListView
         }
         return false
     }

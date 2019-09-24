@@ -1,48 +1,55 @@
-#if MIXBOX_ENABLE_IN_APP_SERVICES
+//
+//  TableViewSizzlerImpl.swift
+//  MixboxInAppServices
+//
+//  Created by ANTROPOV Evgeny on 24.09.2019.
+//
 
+#if MIXBOX_ENABLE_IN_APP_SERVICES
+import Foundation
 import MixboxTestability
 import MixboxFoundation
 
 // TODO: Split. swiftlint:disable file_length
-public final class CollectionViewSwizzlerImpl: CollectionViewSwizzler {
+public final class TableViewSizzlerImpl: TableViewSwizzler {
     private let assertingSwizzler: AssertingSwizzler
     private let onceToken = ThreadUnsafeOnceToken()
-    
+
     public init(assertingSwizzler: AssertingSwizzler) {
         self.assertingSwizzler = assertingSwizzler
     }
-    
+
     public func swizzle() {
         onceToken.executeOnce {
             swizzleWhileBeingExecutedOnce()
         }
     }
-    
+
     private func swizzleWhileBeingExecutedOnce() {
         swizzle(
-            originalSelector: #selector(UICollectionView.reloadData),
-            swizzledSelector: #selector(UICollectionView.swizzled_TableViewSwizzler_reloadData),
+            originalSelector: #selector(UITableView.reloadData),
+            swizzledSelector: #selector(UITableView.swizzled_TableViewSwizzler_reloadData),
             shouldAssertIfMethodIsSwizzledOnlyOneTime: true
         )
         swizzle(
-            originalSelector: #selector(UICollectionView.performBatchUpdates(_:completion:)),
-            swizzledSelector: #selector(UICollectionView.swizzled_CollectionViewSwizzler_performBatchUpdates(_:completion:)),
+            originalSelector: #selector(UITableView.endUpdates),
+            swizzledSelector: #selector(UITableView.swizzled_tableViewSwizzler_endUpdates),
             shouldAssertIfMethodIsSwizzledOnlyOneTime: true
         )
         // UIAccessibilityContainer:
         swizzle(
             originalSelector: #selector(UIView.accessibilityElementCount),
-            swizzledSelector: #selector(UIView.swizzled_CollectionViewSwizzler_accessibilityElementCount),
-            shouldAssertIfMethodIsSwizzledOnlyOneTime: false // Also swizzled for UICollectionViewCell
+            swizzledSelector: #selector(UIView.swizzled_tableViewSwizzler_accessibilityElementCount),
+            shouldAssertIfMethodIsSwizzledOnlyOneTime: false // Also swizzled for UITableVIewCell
         )
         swizzle(
             originalSelector: #selector(UIView.accessibilityElement(at:)),
-            swizzledSelector: #selector(UIView.swizzled_CollectionViewSwizzler_accessibilityElement(at:)),
-            shouldAssertIfMethodIsSwizzledOnlyOneTime: false  // Also swizzled for UICollectionViewCell
+            swizzledSelector: #selector(UIView.swizzled_TableViewSwizzler_accessibilityElement(at:)),
+            shouldAssertIfMethodIsSwizzledOnlyOneTime: false  // Also swizzled for UITableVIewCell
         )
         swizzle(
             originalSelector: #selector(UIView.index(ofAccessibilityElement:)),
-            swizzledSelector: #selector(UIView.swizzled_CollectionViewSwizzler_index(ofAccessibilityElement:)),
+            swizzledSelector: #selector(UIView.swizzled_TableViewSwizzler_index(ofAccessibilityElement:)),
             shouldAssertIfMethodIsSwizzledOnlyOneTime: true
         )
         // Without swizzling that function below (with swizzling of functions of UIAccessibilityContainer only),
@@ -52,18 +59,18 @@ public final class CollectionViewSwizzlerImpl: CollectionViewSwizzler {
         // the hack below was found after some reverse engineering.
         swizzle(
             originalSelector: Selector(("_accessibilityUserTestingChildren")),
-            swizzledSelector: #selector(UIView.swizzled_CollectionViewSwizzler_accessibilityUserTestingChildren),
+            swizzledSelector: #selector(UIView.swizzled_TableViewSwizzler_accessibilityUserTestingChildren),
             shouldAssertIfMethodIsSwizzledOnlyOneTime: true
         )
     }
-    
+
     private func swizzle(
         originalSelector: Selector,
         swizzledSelector: Selector,
         shouldAssertIfMethodIsSwizzledOnlyOneTime: Bool)
     {
         assertingSwizzler.swizzle(
-            class: UICollectionView.self,
+            class: UITableView.self,
             originalSelector: originalSelector,
             swizzledSelector: swizzledSelector,
             methodType: .instanceMethod,
@@ -72,40 +79,40 @@ public final class CollectionViewSwizzlerImpl: CollectionViewSwizzler {
     }
 }
 
-private var cellsState_associatedObjectKey = "UICollectionView_cellsState_297BF7468EC6"
-private var cachedFakeCells_associatedObjectKey = "UICollectionView_cachedFakeCells_5F3FCE1CB0A0"
+private var cellsState_associatedObjectKey = "UITableView_cellsState_297BF7468EC6"
+private var cachedFakeCells_associatedObjectKey = "UITableView_cachedFakeCells_5F3FCE1CB0A0"
 
-extension UICollectionView {
+extension UITableView {
     @objc override open func testabilityValue_children() -> [UIView] {
-        return collectionViewSwizzler_accessibilityUserTestingChildren().compactMap { $0 as? UIView }
+        return tableViewSwizzler_accessibilityUserTestingChildren().compactMap { $0 as? UIView }
     }
-    
-    private func changeStateInEverySuperview(cellsState: UICollectionView.CellsState) {
+
+    private func changeStateInEverySuperview(cellsState: UITableView.CellsState) {
         var pointer: UIView? = self
-        
+
         while let view = pointer {
-            if let collectionView = view as? UICollectionView {
-                collectionView.cellsState = cellsState
+            if let tableView = view as? UITableView {
+                tableView.cellsState = cellsState
             }
-            
-            if let collectionView = (view as? UICollectionViewCell)?.mb_fakeCellInfo?.parentCollectionView {
-                pointer = collectionView
+
+            if let tableView = (view as? UITableViewCell)?.mb_fakeCellInfo?.parentTableView {
+                pointer = tableView
             } else {
                 pointer = superview
             }
         }
     }
-    
-    func startCollectionViewUpdates() {
+
+    func startTableViewUpdates() {
         changeStateInEverySuperview(cellsState: .realCellsAreUpdating_fakeCellsCacheDoesNotExist)
     }
-    
-    func completeCollectionViewUpdates() {
+
+    func completeTableViewUpdates() {
         changeStateInEverySuperview(cellsState: .realCellsAreUpdated_fakeCellsCacheDoesNotExist)
     }
 }
 
-fileprivate extension UICollectionView {
+fileprivate extension UITableView {
     enum CellsState: String {
         // TODO: Make better structure of the state and put cache inside one of the cases to make state consistent.
         case realCellsAreUpdating_fakeCellsCacheDoesNotExist // to not do anything, because state is not consistent
@@ -113,7 +120,7 @@ fileprivate extension UICollectionView {
         case realCellsAreUpdated_fakeCellsCacheIsUpdating // basically to prevent stackoverflow
         case realCellsAreUpdated_fakeCellsCacheIsUpdated // to use cache
         case fakeCellsCacheCanNotBeObtained // to not use cache
-        
+
         var needToUpdateCache: Bool {
             switch self {
             case .realCellsAreUpdated_fakeCellsCacheDoesNotExist:
@@ -125,7 +132,7 @@ fileprivate extension UICollectionView {
                 return false
             }
         }
-        
+
         var needToIgnoreCache: Bool {
             switch self {
             case .realCellsAreUpdating_fakeCellsCacheDoesNotExist,
@@ -138,11 +145,11 @@ fileprivate extension UICollectionView {
             }
         }
     }
-    
-    private var cachedFakeCells: [UICollectionViewCell] {
+
+    private var cachedFakeCells: [UITableViewCell] {
         get {
-            guard let value = objc_getAssociatedObject(self, &cachedFakeCells_associatedObjectKey) as? [UICollectionViewCell] else {
-                let initialValue = [UICollectionViewCell]()
+            guard let value = objc_getAssociatedObject(self, &cachedFakeCells_associatedObjectKey) as? [UITableViewCell] else {
+                let initialValue = [UITableViewCell]()
                 objc_setAssociatedObject(
                     self,
                     &cachedFakeCells_associatedObjectKey,
@@ -151,7 +158,7 @@ fileprivate extension UICollectionView {
                 )
                 return initialValue
             }
-            
+
             return value
         }
         set {
@@ -163,7 +170,7 @@ fileprivate extension UICollectionView {
             )
         }
     }
-    
+
     private var cellsState: CellsState {
         get {
             let initialValue = CellsState.realCellsAreUpdated_fakeCellsCacheDoesNotExist
@@ -176,7 +183,7 @@ fileprivate extension UICollectionView {
                 )
                 return initialValue
             }
-            
+
             return CellsState(rawValue: value) ?? initialValue
         }
         set {
@@ -188,50 +195,42 @@ fileprivate extension UICollectionView {
             )
         }
     }
-    
+
     @objc func swizzled_TableViewSwizzler_reloadData() {
         cellsState = .realCellsAreUpdating_fakeCellsCacheDoesNotExist
         swizzled_TableViewSwizzler_reloadData()
         cellsState = .realCellsAreUpdated_fakeCellsCacheDoesNotExist
     }
-    
-    @objc func swizzled_CollectionViewSwizzler_performBatchUpdates(
-        _ updates: (() -> ())?,
-        completion: ((Bool) -> ())?)
-    {
+
+    @objc func swizzled_tableViewSwizzler_endUpdates() {
         cellsState = .realCellsAreUpdating_fakeCellsCacheDoesNotExist
-        swizzled_CollectionViewSwizzler_performBatchUpdates(
-            updates,
-            completion: { [weak self] args in
-                completion?(args)
-                self?.cellsState = .realCellsAreUpdated_fakeCellsCacheDoesNotExist
-            }
-        )
+        swizzled_tableViewSwizzler_endUpdates()
+        cellsState = .realCellsAreUpdated_fakeCellsCacheDoesNotExist
     }
-    
+
     // TODO: Cache subviews, this function should not be called for every accessibility element
     func getAccessibilityElements() -> [NSObject] {
-        var collectionViewCells = [UIView]()
+        var tableViewCells = [UIView]()
         var visibleCells = Set<UIView>()
-        
+
         for fakeCell in cachedFakeCells {
             let cell: UIView
-            
+
             assert(fakeCell.mb_fakeCellInfo != nil)
-            
+
             if let indexPath = fakeCell.mb_fakeCellInfo?.indexPath,
-                let visibleCell = cellForItem(at: indexPath)
+                let visibleCell = cellForRow(at: indexPath)
             {
                 cell = visibleCell
                 visibleCells.insert(visibleCell)
             } else {
                 cell = fakeCell
             }
-            collectionViewCells.append(cell)
+            tableViewCells.append(cell)
         }
-        
+
         let allSubviewsThatAreNotCells = subviews.filter { view in
-            // TODO: We can add a UICollectionViewCell with addSubview as well.
+            // TODO: We can add a UITableVIewCell with addSubview as well.
             // I know it is bad to add a cell via addSubview method instead of
             // via collection view interfaces, but is still possible...
             //
@@ -242,10 +241,10 @@ fileprivate extension UICollectionView {
             // For example, there was different code, but we got tens of extra elements in hierarchy:
             //
             // !visibleCells.contains(view)
-            
-            !(view is UICollectionViewCell)
+
+            !(view is UITableViewCell)
         }
-        
+
         // TODO: Better mixing cells
         //
         // How it is working now:
@@ -253,103 +252,103 @@ fileprivate extension UICollectionView {
         //
         // How it should working:
         // subview1 fakeCell1 visibleCell1 subview2 visibleCell2 fakeCell2 fakeCell3 subview3
-        
-        return (collectionViewCells + allSubviewsThatAreNotCells).map { cell in
-            if let cell = cell as? UICollectionViewCell {
+
+        return (tableViewCells + allSubviewsThatAreNotCells).map { cell in
+            if let cell = cell as? UITableViewCell {
                 if let indexPath = cell.mb_fakeCellInfo?.indexPath {
-                    if let visibleCell = cellForItem(at: indexPath) {
+                    if let visibleCell = cellForRow(at: indexPath) {
                         return visibleCell
                     }
                 }
             }
-            
+
             return cell
         }
     }
-    
-    @nonobjc func collectionViewSwizzler_accessibilityElementCount() -> Int {
+
+    @nonobjc func tableViewSwizzler_accessibilityElementCount() -> Int {
         if cellsState.needToIgnoreCache {
-            return swizzled_CollectionViewSwizzler_accessibilityElementCount()
+            return swizzled_tableViewSwizzler_accessibilityElementCount()
         }
         if cellsState.needToUpdateCache {
             updateAccessibilityElements()
         }
         return getAccessibilityElements().count
     }
-    
-    @nonobjc func collectionViewSwizzler_accessibilityElement(at index: Int) -> Any? {
+
+    @nonobjc func tableViewSwizzler_accessibilityElement(at index: Int) -> Any? {
         if cellsState.needToIgnoreCache {
-            return swizzled_CollectionViewSwizzler_accessibilityElement(at: index)
+            return swizzled_TableViewSwizzler_accessibilityElement(at: index)
         }
         if cellsState.needToUpdateCache {
             updateAccessibilityElements()
         }
         return getAccessibilityElements().mb_elementAtIndex(index)
     }
-    
-    @nonobjc func collectionViewSwizzler_index(ofAccessibilityElement element: Any) -> Int {
+
+    @nonobjc func tableViewSwizzler_index(ofAccessibilityElement element: Any) -> Int {
         if cellsState.needToIgnoreCache {
-            return swizzled_CollectionViewSwizzler_index(ofAccessibilityElement: element)
+            return swizzled_TableViewSwizzler_index(ofAccessibilityElement: element)
         }
         if cellsState.needToUpdateCache {
             updateAccessibilityElements()
         }
-        
+
         var index = (subviews as NSArray).index(of: element)
         if index == NSNotFound {
             index = (accessibilityElements as NSArray?)?.index(of: element) ?? NSNotFound
         }
         return index
     }
-    
-    @nonobjc func collectionViewSwizzler_accessibilityUserTestingChildren() -> NSArray {
+
+    @nonobjc func tableViewSwizzler_accessibilityUserTestingChildren() -> NSArray {
         if cellsState.needToIgnoreCache {
-            return swizzled_CollectionViewSwizzler_accessibilityUserTestingChildren()
+            return swizzled_TableViewSwizzler_accessibilityUserTestingChildren()
         }
         if cellsState.needToUpdateCache {
             updateAccessibilityElements()
         }
-        
+
         return getAccessibilityElements() as NSArray
     }
-    
+
     // TODO: Split. swiftlint:disable:next function_body_length
     @nonobjc private func updateAccessibilityElements() {
         assert(cellsState == .realCellsAreUpdated_fakeCellsCacheDoesNotExist)
         cellsState = .realCellsAreUpdated_fakeCellsCacheIsUpdating
-        
+
         // Without calling `reuseCell` dequeueing of cells will lead to leaks, new cells will
         // appear hidden in real view hierarchy.
         for fakeCell in self.cachedFakeCells {
             ObjectiveCExceptionCatcher.catch(
                 try: {
+                    _reuseCell(fakeCell, withIndexPath: fakeCell.mb_fakeCellInfo?.indexPath, didEndDisplaying: false)
                     fakeCell.mb_fakeCellInfo = nil
-                    _reuse(fakeCell)
-                },
+            },
                 catch: { _ in }
             )
         }
-        
+
         self.cachedFakeCells = []
-        
-        var cachedFakeCells = [UICollectionViewCell]()
-        
+
+        var cachedFakeCells = [UITableViewCell]()
+
         ObjectiveCExceptionCatcher.catch(
             try: {
                 if let dataSource = dataSource {
                     for sectionId in 0..<numberOfSections {
-                        for itemId in 0..<numberOfItems(inSection: sectionId) {
+                        for itemId in 0..<numberOfRows(inSection: sectionId) {
                             let indexPath = IndexPath(row: itemId, section: sectionId)
-                            
+
                             let fakeCell = FakeCellManagerProvider.fakeCellManager.createFakeCellInside {
                                 // Usage of native function to create cell for a specific index path.
-                                // It has some problems that were solved via swizzling of UICollectionViewCell.
-                                dataSource.collectionView(
+                                // It has some problems that were solved via swizzling of UITableVIewCell.
+                                dataSource.tableView(
                                     self,
-                                    cellForItemAt: indexPath
+                                    cellForRowAt: indexPath
                                 )
                             }
-                            
+                            fakeCell.frame = self.rectForRow(at: indexPath)
                             // `collectionView(_:cellForItemAt:)` can add subview to collection view.
                             // I think there is no logic for that, and I think Apple did it because they thought
                             // that `collectionView(_:cellForItemAt:)` should always be followed by
@@ -357,44 +356,44 @@ fileprivate extension UICollectionView {
                             // usually cell is not added to collection view.
                             fakeCell.removeFromSuperview()
                             fakeCell._setHidden(forReuse: false)
-                            
+
                             assert(!fakeCell.isNotFakeCellDueToPresenceInViewHierarchy())
-                            
-                            fakeCell.mb_fakeCellInfo = FakeCollectionCellInfo(
+
+                            fakeCell.mb_fakeCellInfo = FakeTableCellInfo(
                                 indexPath: indexPath,
-                                parentCollectionView: self
+                                parentTableView: self
                             )
                             fakeCell.mb_configureAsFakeCell?()
-                            
+
                             // It wouldn't be called without a parent.
                             // But it is needed to set a frame. Elements with zero frame are not shown in AX hierarchy.
                             fakeCell.setNeedsLayout()
                             fakeCell.layoutIfNeeded()
-                            
+
                             cachedFakeCells.append(fakeCell)
                         }
                     }
                 }
-                
+
                 self.cachedFakeCells = cachedFakeCells
                 cellsState = .realCellsAreUpdated_fakeCellsCacheIsUpdated
-            },
+        },
             catch: { _ in
                 for fakeCell in self.cachedFakeCells {
                     ObjectiveCExceptionCatcher.catch(
                         try: {
+                            _reuseCell(fakeCell, withIndexPath: fakeCell.mb_fakeCellInfo?.indexPath, didEndDisplaying: false)
                             fakeCell.mb_fakeCellInfo = nil
-                            _reuse(fakeCell)
-                        },
+                    },
                         catch: { _ in
                             // TODO: Notify via assertion failure.
-                        }
+                    }
                     )
                 }
-                
+
                 self.cachedFakeCells = []
                 cellsState = .fakeCellsCacheCanNotBeObtained
-            }
+        }
         )
     }
 }
@@ -406,63 +405,63 @@ fileprivate extension UICollectionView {
 // `self` as UICollectionView will lead to a crash. Also it is something that may change. We want to be
 // tolerant to where the method is actually implemented.
 private extension UIView {
-    @objc func swizzled_CollectionViewSwizzler_accessibilityElementCount() -> Int {
-        guard let collectionView = self as? UICollectionView else {
-            return swizzled_CollectionViewSwizzler_accessibilityElementCount()
+    @objc func swizzled_tableViewSwizzler_accessibilityElementCount() -> Int {
+        guard let tableView = self as? UITableView else {
+            return swizzled_tableViewSwizzler_accessibilityElementCount()
         }
-        
+
         return ObjectiveCExceptionCatcher.catch(
             try: {
-                collectionView.collectionViewSwizzler_accessibilityElementCount()
-            },
+                tableView.tableViewSwizzler_accessibilityElementCount()
+        },
             catch: { _ in
-                swizzled_CollectionViewSwizzler_accessibilityElementCount()
-            }
+                swizzled_tableViewSwizzler_accessibilityElementCount()
+        }
         )
     }
-    
-    @objc func swizzled_CollectionViewSwizzler_accessibilityElement(at index: Int) -> Any? {
-        guard let collectionView = self as? UICollectionView else {
-            return swizzled_CollectionViewSwizzler_accessibilityElement(at: index)
+
+    @objc func swizzled_TableViewSwizzler_accessibilityElement(at index: Int) -> Any? {
+        guard let tableView = self as? UITableView else {
+            return swizzled_TableViewSwizzler_accessibilityElement(at: index)
         }
-        
+
         return ObjectiveCExceptionCatcher.catch(
             try: {
-                collectionView.collectionViewSwizzler_accessibilityElement(at: index)
-            },
+                tableView.tableViewSwizzler_accessibilityElement(at: index)
+        },
             catch: { _ in
-                swizzled_CollectionViewSwizzler_accessibilityElement(at: index)
-            }
+                swizzled_TableViewSwizzler_accessibilityElement(at: index)
+        }
         )
     }
-    
-    @objc func swizzled_CollectionViewSwizzler_index(ofAccessibilityElement element: Any) -> Int {
-        guard let collectionView = self as? UICollectionView else {
-            return swizzled_CollectionViewSwizzler_index(ofAccessibilityElement: element)
+
+    @objc func swizzled_TableViewSwizzler_index(ofAccessibilityElement element: Any) -> Int {
+        guard let tableView = self as? UITableView else {
+            return swizzled_TableViewSwizzler_index(ofAccessibilityElement: element)
         }
-        
+
         return ObjectiveCExceptionCatcher.catch(
             try: {
-                collectionView.collectionViewSwizzler_index(ofAccessibilityElement: element)
-            },
+                tableView.tableViewSwizzler_index(ofAccessibilityElement: element)
+        },
             catch: { _ in
-                swizzled_CollectionViewSwizzler_index(ofAccessibilityElement: element)
-            }
+                swizzled_TableViewSwizzler_index(ofAccessibilityElement: element)
+        }
         )
     }
-    
-    @objc func swizzled_CollectionViewSwizzler_accessibilityUserTestingChildren() -> NSArray {
-        guard let collectionView = self as? UICollectionView else {
-            return swizzled_CollectionViewSwizzler_accessibilityUserTestingChildren()
+
+    @objc func swizzled_TableViewSwizzler_accessibilityUserTestingChildren() -> NSArray {
+        guard let tableView = self as? UITableView else {
+            return swizzled_TableViewSwizzler_accessibilityUserTestingChildren()
         }
-        
+
         return ObjectiveCExceptionCatcher.catch(
             try: {
-                collectionView.collectionViewSwizzler_accessibilityUserTestingChildren()
-            },
+                tableView.tableViewSwizzler_accessibilityUserTestingChildren()
+        },
             catch: { _ in
-                swizzled_CollectionViewSwizzler_accessibilityUserTestingChildren()
-            }
+                swizzled_TableViewSwizzler_accessibilityUserTestingChildren()
+        }
         )
     }
 }

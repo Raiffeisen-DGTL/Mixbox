@@ -20,4 +20,23 @@ public final class MixboxCollectionViewUpdatesActivityImpl: MixboxCollectionView
     }
 }
 
+public final class MixboxTableViewUpdatesActivityImpl: MixboxTableViewUpdatesActivity {
+    private let tableView: UITableView
+    private var completeWasCalled = false
+
+    public init(tableView: UITableView) {
+        self.tableView = tableView
+    }
+
+    public func complete() {
+        tableView.completeTableViewUpdates()
+        completeWasCalled = true
+    }
+
+    deinit {
+        assert(completeWasCalled, "You have to call complete() on object returned from startCollectionViewUpdates")
+    }
+}
+
+
 #endif
