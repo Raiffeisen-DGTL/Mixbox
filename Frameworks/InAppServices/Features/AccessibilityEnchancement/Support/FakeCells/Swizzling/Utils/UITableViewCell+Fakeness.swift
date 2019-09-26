@@ -14,7 +14,8 @@ extension UITableViewCell {
     // This is due to a decision that observing fakeness will cost us more than resetting properties while getting them.
     var mb_fakeCellInfo: FakeTableCellInfo? {
         get {
-            resetFakenessOfCellIfNeeded()
+            let value = objc_getAssociatedObject(self, &fakeCellInfo_associatedObjectKey) as? FakeTableCellInfo
+            resetFakenessOfCellIfNeeded(info: value)
             return objc_getAssociatedObject(self, &fakeCellInfo_associatedObjectKey) as? FakeTableCellInfo
         }
         set {
@@ -27,8 +28,8 @@ extension UITableViewCell {
         }
     }
 
-    private func resetFakenessOfCellIfNeeded() {
-        if isNotFakeCellDueToPresenceInViewHierarchy() {
+    private func resetFakenessOfCellIfNeeded(info: FakeTableCellInfo?) {
+        if isNotFakeCellDueToPresenceInViewHierarchy() && (info?.cellWithReuse ?? true) {
             resetFakenessOfCell()
         }
     }

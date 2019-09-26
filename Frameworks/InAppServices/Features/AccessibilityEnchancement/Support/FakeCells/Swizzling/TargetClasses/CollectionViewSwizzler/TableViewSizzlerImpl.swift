@@ -349,22 +349,28 @@ fileprivate extension UITableView {
                                 )
                             }
                             fakeCell.frame = self.rectForRow(at: indexPath)
-                            // `collectionView(_:cellForItemAt:)` can add subview to collection view.
-                            // I think there is no logic for that, and I think Apple did it because they thought
-                            // that `collectionView(_:cellForItemAt:)` should always be followed by
-                            // adding cell as subview. Note that this behavior is not constant, in fact
-                            // usually cell is not added to collection view.
-                            fakeCell.removeFromSuperview()
-                            fakeCell._setHidden(forReuse: false)
 
-                            assert(!fakeCell.isNotFakeCellDueToPresenceInViewHierarchy())
-
-                            fakeCell.mb_fakeCellInfo = FakeTableCellInfo(
+                            let cellInfo = FakeTableCellInfo(
                                 indexPath: indexPath,
                                 parentTableView: self
                             )
-                            fakeCell.mb_configureAsFakeCell?()
 
+
+                            if  dataSource.tableView(self, cellForRowAt: indexPath) == fakeCell {
+                                cellInfo.cellWithReuse = false
+                            } else {
+                                // `collectionView(_:cellForItemAt:)` can add subview to collection view.
+                                // I think there is no logic for that, and I think Apple did it because they thought
+                                // that `collectionView(_:cellForItemAt:)` should always be followed by
+                                // adding cell as subview. Note that this behavior is not constant, in fact
+                                // usually cell is not added to collection view.
+                                fakeCell.removeFromSuperview()
+                                fakeCell._setHidden(forReuse: false)
+
+                                assert(!fakeCell.isNotFakeCellDueToPresenceInViewHierarchy())
+                            }
+                            fakeCell.mb_fakeCellInfo = cellInfo
+                            fakeCell.mb_configureAsFakeCell?()
                             // It wouldn't be called without a parent.
                             // But it is needed to set a frame. Elements with zero frame are not shown in AX hierarchy.
                             fakeCell.setNeedsLayout()

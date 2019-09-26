@@ -11,6 +11,7 @@ import MixboxFoundation
 import UIKit
 
 final class FakeTableCellInfo {
+    var cellWithReuse = true
     let indexPath: IndexPath
     var parentTableView: UITableView? {
         return parentTableViewBox.value

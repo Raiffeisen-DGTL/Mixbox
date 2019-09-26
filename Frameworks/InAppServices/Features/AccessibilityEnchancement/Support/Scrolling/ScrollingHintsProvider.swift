@@ -176,27 +176,30 @@ final class ScrollingHintsProvider {
                 // to the collection view
                 pointer = parentCollectionView
             } else if let cell = viewFromPointer as? UITableViewCell,
-                let parentCollectionView = cell.mb_fakeCellInfo?.parentTableView
+                let parentTableView = cell.mb_fakeCellInfo?.parentTableView
             {
-                // Handle fake cell
-                if parentCollectionView.xScrollIsPossible || parentCollectionView.yScrollIsPossible {
-                    scrollingInstructions.append(
-                        ScrollingInstruction(
-                            scrollView: parentCollectionView,
-                            targetRect: frame(ofView: cell, inView: parentCollectionView),
-                            targetViewUniqueIdentifier: nil
+                let visibleTableRect = CGRect(origin: parentTableView.contentOffset, size: parentTableView.bounds.size)
+                //Already visible, nothing to do
+                if !visibleTableRect.contains(cell.frame) {
+                    // Handle fake cell
+                    if parentTableView.xScrollIsPossible || parentTableView.yScrollIsPossible {
+                        scrollingInstructions.append(
+                            ScrollingInstruction(
+                                scrollView: parentTableView,
+                                targetRect: frame(ofView: cell, inView: parentTableView),
+                                targetViewUniqueIdentifier: nil
+                            )
                         )
-                    )
 
-                    viewToScrollTo = parentCollectionView
+                        viewToScrollTo = parentTableView
+                    }
                 }
-
                 // The fake cell has no parent, but it has a reference
                 // to the collection view
-                pointer = parentCollectionView
+                pointer = parentTableView
             } else {
                 // Handle other views
-                if let scrollView = viewFromPointer as? UIScrollView, viewToScrollTo != scrollView {
+                if let scrollView = viewFromPointer as? UIScrollView, viewToScrollTo != scrollView && !(viewFromPointer is UITableView) && !(viewFromPointer is UICollectionView)  {
                     if scrollView.xScrollIsPossible || scrollView.yScrollIsPossible {
                         scrollingInstructions.append(
                             ScrollingInstruction(
