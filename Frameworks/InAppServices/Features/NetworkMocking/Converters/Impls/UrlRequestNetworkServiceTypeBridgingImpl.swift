@@ -59,6 +59,8 @@ public final class UrlRequestNetworkServiceTypeBridgingImpl: UrlRequestNetworkSe
             return .responsiveData
         case .callSignaling:
             return .callSignaling
+        default:
+            return .`default`
         }
     }
 }
