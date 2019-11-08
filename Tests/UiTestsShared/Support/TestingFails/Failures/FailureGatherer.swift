@@ -131,12 +131,12 @@ extension FailureGatherer {
         }
         
         if let descriptionMatcher = descriptionMatcher {
-            switch descriptionMatcher.matches(value: failures[0].description) {
+            switch descriptionMatcher.matches(value: firstFailure.description) {
             case .match:
                 break
-            case .mismatch(_, let mismatchDescription):
+            case .mismatch(let mismatchResult):
                 XCTFail(
-                    "Failure mismatches: \(mismatchDescription())",
+                    "Failure mismatches: \(mismatchResult.mismatchDescription)",
                     file: fileOfThisAssertion,
                     line: lineOfThisAssertion
                 )
@@ -145,7 +145,7 @@ extension FailureGatherer {
         
         if let file = file {
             XCTAssertEqual(
-                failures[0].file,
+                firstFailure.file,
                 file,
                 file: fileOfThisAssertion,
                 line: lineOfThisAssertion
@@ -154,7 +154,7 @@ extension FailureGatherer {
         
         if let line = line {
             XCTAssertEqual(
-                failures[0].line,
+                firstFailure.line,
                 line,
                 file: fileOfThisAssertion,
                 line: lineOfThisAssertion
@@ -163,7 +163,7 @@ extension FailureGatherer {
         
         if let expected = expected {
             XCTAssertEqual(
-                failures[0].expected,
+                firstFailure.expected,
                 expected,
                 file: fileOfThisAssertion,
                 line: lineOfThisAssertion

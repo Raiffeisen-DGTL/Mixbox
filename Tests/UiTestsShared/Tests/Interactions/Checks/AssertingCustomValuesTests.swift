@@ -3,8 +3,12 @@ import XCTest
 
 final class AssertingCustomValuesTests: TestCase {
     override func precondition() {
+        super.precondition()
+        
         openScreen(name: "AssertingCustomValuesTestsView")
     }
+    
+    private static let valueKey = "valueKey"
     
     func test_equals() {
         check(
@@ -43,21 +47,21 @@ final class AssertingCustomValuesTests: TestCase {
     
     func test_isCloseTo() {
         check(id: "double_1.0") {
-            $0.customValues["v"].isClose(to: 1.0, delta: 0)
+            $0.customValues[AssertingCustomValuesTests.valueKey].isClose(to: 1.0, delta: 0)
         }
         
         checkFails(id: "double_1.0") {
-            $0.customValues["v"].isClose(to: 1.1, delta: 0)
+            $0.customValues[AssertingCustomValuesTests.valueKey].isClose(to: 1.1, delta: 0)
         }
     }
     
     func test_isCloseTo_boundaries() {
         check(id: "double_1.0") {
-            $0.customValues["v"].isClose(to: 1.1, delta: 0.100001)
+            $0.customValues[AssertingCustomValuesTests.valueKey].isClose(to: 1.1, delta: 0.100001)
         }
         
         checkFails(id: "double_1.0") {
-            $0.customValues["v"].isClose(to: 1.1, delta: 0.099999)
+            $0.customValues[AssertingCustomValuesTests.valueKey].isClose(to: 1.1, delta: 0.099999)
         }
     }
     
@@ -66,7 +70,7 @@ final class AssertingCustomValuesTests: TestCase {
         equals value: T)
     {
         check(id: id) {
-            $0.customValues["v"] == value
+            $0.customValues[AssertingCustomValuesTests.valueKey] == value
         }
     }
     

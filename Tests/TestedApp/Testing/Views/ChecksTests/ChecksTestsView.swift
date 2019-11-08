@@ -28,9 +28,10 @@ final class ChecksTestsView: TestStackScrollView, InitializableWithTestingViewCo
         // If reload in "synchronous", without delay, completion is called after reload.
         // Otherwise completion is called before first action.
         // If there is no actions, completion is also called.
-        let callCompletionOnce = ThreadSafeOnceToken()
+        let callCompletionOnce = ThreadSafeOnceToken<Void>()
+        
         func uiTestsCanStartCheckingUi() {
-            callCompletionOnce.executeOnce {
+            _ = callCompletionOnce.executeOnce {
                 completion()
             }
         }
@@ -83,6 +84,18 @@ final class ChecksTestsView: TestStackScrollView, InitializableWithTestingViewCo
         
         addLabel(id: "hasValue0") {
             $0.accessibilityValue = "Accessibility Value"
+        }
+        
+        addLabel(id: "hasLabel0") {
+            $0.accessibilityLabel = "Accessibility Label"
+        }
+        
+        addLabel(id: "hasLabel1") {
+            $0.text = "Text That Is Expected In Accessibility Label"
+        }
+        
+        addButton(id: "hasLabel2") {
+            $0.accessibilityLabel = "Accessibility Label"
         }
         
         addLabel(id: "isNotDisplayed0") {

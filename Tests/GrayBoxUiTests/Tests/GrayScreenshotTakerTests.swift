@@ -1,12 +1,13 @@
 import MixboxUiTestsFoundation
 import MixboxGray
+import MixboxUiKit
 import XCTest
 
 final class GrayScreenshotTakerTests: TestCase {
     private let screenshotTaker = GrayScreenshotTaker(
         windowsProvider: WindowsProviderImpl(
             application: UIApplication.shared,
-            shouldIncludeStatusBarWindow: true
+            iosVersionProvider: UiDeviceIosVersionProvider(uiDevice: UIDevice.current)
         ),
         screen: UIScreen.main
     )
@@ -26,19 +27,19 @@ final class GrayScreenshotTakerTests: TestCase {
         // Note: tested only on iPhone 7 iOS 11.3. TODO: test on every device.
         let comparator = ImageHashCalculatorSnapshotsComparator(
             imageHashCalculator: DHashV0ImageHashCalculator(),
-            hashDistanceTolerance: 5
+            hashDistanceTolerance: 7
         )
         
-        let result = comparator.equals(
-            actual: screenshot,
-            expected: image(name: "screenshotTestsView_screenshot.png")
+        let result = comparator.compare(
+            actualImage: screenshot,
+            expectedImage: image(name: "screenshotTestsView_screenshot.png")
         )
         
         switch result {
-        case .match:
+        case .similar:
             break
-        case .mismatch(_, let description):
-            XCTFail("Screenshot doesn't match reference: \(description())")
+        case .different(let description):
+            XCTFail("Screenshot doesn't match reference: \(description.message)")
         }
     }
 }

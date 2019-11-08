@@ -3,6 +3,8 @@ import XCTest
 
 final class ApplicationCrashProducesMeaninfulErrorTests: TestCase {
     override func precondition() {
+        super.precondition()
+        
         // Tests rely on the fact that app process will not be debugged.
         // That's why we are installing app to not install it later in tests and to not start debugging it.
         openScreen(name: "CrashTestsView", useBuiltinIpc: true)
@@ -31,7 +33,7 @@ final class ApplicationCrashProducesMeaninfulErrorTests: TestCase {
         {
             element.tap()
             
-            spinner.spin(timeout: 1)
+            waiter.wait(timeout: 1)
             
             pageObjects.screen.view.withoutTimeout.assertIsDisplayed()
         }

@@ -1,21 +1,20 @@
 import MixboxTestsFoundation
 import MixboxUiTestsFoundation
-import MixboxReporting
 
 public final class GrayBoxLegacyNetworkStubbing: LegacyNetworkStubbing {
     private let testFailureRecorder: TestFailureRecorder
-    private let spinner: Spinner
+    private let waiter: RunLoopSpinningWaiter
     
     private let bridgedUrlProtocolClass: GrayBoxLegacyNetworkStubbingBridgedUrlProtocolClass
     
     public init(
         urlProtocolStubAdder: UrlProtocolStubAdder,
         testFailureRecorder: TestFailureRecorder,
-        spinner: Spinner,
+        waiter: RunLoopSpinningWaiter,
         bundleResourcePathProvider: BundleResourcePathProvider)
     {
         self.testFailureRecorder = testFailureRecorder
-        self.spinner = spinner
+        self.waiter = waiter
         
         self.bridgedUrlProtocolClass = GrayBoxLegacyNetworkStubbingBridgedUrlProtocolClass(
             urlProtocolStubAdder: urlProtocolStubAdder,
@@ -34,7 +33,7 @@ public final class GrayBoxLegacyNetworkStubbing: LegacyNetworkStubbing {
             httpMethod: httpMethod,
             grayBoxLegacyNetworkStubbingNetworkStubRepository: bridgedUrlProtocolClass,
             testFailureRecorder: testFailureRecorder,
-            spinner: spinner
+            waiter: waiter
         )
     }
     

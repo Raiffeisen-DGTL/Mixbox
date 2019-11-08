@@ -4,6 +4,7 @@ import MixboxIpc
 import MixboxIpcCommon
 import MixboxFoundation
 import MixboxTestability
+import MixboxUiKit
 
 public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenciesFactory {
     public let ipcStarter: IpcStarter
@@ -12,16 +13,17 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
     public let swizzler: Swizzler
     public let swizzlingSynchronization: SwizzlingSynchronization
     public let accessibilityEnhancer: AccessibilityEnhancer
-    public let accessibilityValueSwizzler: AccessibilityValueSwizzler
     public let fakeCellsSwizzling: FakeCellsSwizzling
     public let collectionViewCellSwizzler: CollectionViewCellSwizzler
     public let collectionViewSwizzler: CollectionViewSwizzler
     public let tableViewCellSwizzler: TableViewCellSwizzler
     public let tableViewSwizzler: TableViewSwizzler
     public let fakeCellManager: FakeCellManager
+    public let keyboardEventInjector: KeyboardEventInjector
     
     private let networkMockingBootstrappingType: NetworkMockingBootstrappingType
     
+    // TODO: fix swiftlint:disable:next function_body_length
     public init?(environment: [String: String]) {
         // TODO: Fail tests instead of crashing app
         assertionFailureRecorder = StandardLibraryAssertionFailureRecorder()
@@ -75,16 +77,16 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
         self.ipcStarter = ipcStarter
         
         let shouldEnhanceAccessibilityValue = ipcStarterType != IpcStarterType.graybox // TODO: Wrong place for this logic
-        let shouldAddAssertionForCallingIsHiddenOnFakeCell
-            = environment["MIXBOX_SHOULD_ADD_ASSERTION_FOR_CALLING_IS_HIDDEN_ON_FAKE_CELL"] == "true"
         
         let shouldEnableFakeCells = (environment["MIXBOX_SHOULD_ENABLE_FAKE_CELLS"] ?? "true") == "true"
         
-        accessibilityValueSwizzler = AccessibilityValueSwizzlerImpl()
+        let accessibilityLabelSwizzlerFactory = AccessibilityLabelSwizzlerFactoryImpl(
+            allMethodsWithUniqueImplementationAccessibilityLabelSwizzlerFactory: AllMethodsWithUniqueImplementationAccessibilityLabelSwizzlerFactoryImpl(),
+            iosVersionProvider: UiDeviceIosVersionProvider(uiDevice: UIDevice.current)
+        )
         
         collectionViewCellSwizzler = CollectionViewCellSwizzlerImpl(
-            assertingSwizzler: assertingSwizzler,
-            shouldAddAssertionForCallingIsHiddenOnFakeCell: shouldAddAssertionForCallingIsHiddenOnFakeCell
+            assertingSwizzler: assertingSwizzler
         )
         
         collectionViewSwizzler = CollectionViewSwizzlerImpl(
@@ -109,11 +111,18 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
         fakeCellManager = FakeCellManagerImpl()
         
         accessibilityEnhancer = AccessibilityEnhancerImpl(
-            accessibilityValueSwizzler: accessibilityValueSwizzler,
+            accessibilityLabelSwizzlerFactory: accessibilityLabelSwizzlerFactory,
             fakeCellsSwizzling: fakeCellsSwizzling,
             shouldEnableFakeCells: shouldEnableFakeCells,
             shouldEnhanceAccessibilityValue: shouldEnhanceAccessibilityValue,
             fakeCellManager: fakeCellManager
+        )
+        
+        keyboardEventInjector = KeyboardEventInjectorImpl(
+            application: UIApplication.shared,
+            handleHidEventSwizzler: HandleHidEventSwizzlerImpl(
+                assertingSwizzler: assertingSwizzler
+            )
         )
     }
     

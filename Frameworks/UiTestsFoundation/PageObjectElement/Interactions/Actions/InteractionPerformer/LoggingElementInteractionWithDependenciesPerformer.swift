@@ -1,23 +1,25 @@
-import MixboxReporting
+import MixboxTestsFoundation
 import MixboxFoundation
-import MixboxArtifacts
 
 public final class LoggingElementInteractionWithDependenciesPerformer: ElementInteractionWithDependenciesPerformer {
     private let nestedInteractionPerformer: ElementInteractionWithDependenciesPerformer
     private let stepLogger: StepLogger
     private let screenshotAttachmentsMaker: ScreenshotAttachmentsMaker
     private let elementSettings: ElementSettings
+    private let dateProvider: DateProvider
     
     public init(
         nestedInteractionPerformer: ElementInteractionWithDependenciesPerformer,
         stepLogger: StepLogger,
         screenshotAttachmentsMaker: ScreenshotAttachmentsMaker,
-        elementSettings: ElementSettings)
+        elementSettings: ElementSettings,
+        dateProvider: DateProvider)
     {
         self.nestedInteractionPerformer = nestedInteractionPerformer
         self.stepLogger = stepLogger
         self.screenshotAttachmentsMaker = screenshotAttachmentsMaker
         self.elementSettings = elementSettings
+        self.dateProvider = dateProvider
     }
     
     public func perform(
@@ -65,13 +67,10 @@ public final class LoggingElementInteractionWithDependenciesPerformer: ElementIn
         interaction: ElementInteractionWithDependencies)
         -> StepLogBefore
     {
-        let description = interaction.description()
-        
         return StepLogBefore(
-            identifyingDescription: description,
-            detailedDescription: description,
-            stepType: .interaction,
-            artifacts: screenshotAttachmentsMaker.makeScreenshotArtifacts(
+            date: dateProvider.currentDate(),
+            title: interaction.description(),
+            attachments: screenshotAttachmentsMaker.makeScreenshotAttachments(
                 beforeStep: true,
                 includeHash: false
             )
@@ -85,42 +84,49 @@ public final class LoggingElementInteractionWithDependenciesPerformer: ElementIn
         -> StepLogAfter
     {
         let wasSuccessful: Bool
-        var stepArtifacts = [Artifact]()
+        var stepAttachments = [Attachment]()
         
-        stepArtifacts.append(
-            fileLineArtifact(fileLine: fileLine)
+        stepAttachments.append(
+            fileLineAttachment(fileLine: fileLine)
         )
         
         switch interactionResult {
         case .success:
             wasSuccessful = true
         case .failure(let interactionFailure):
-            stepArtifacts.append(
-                Artifact(
+            stepAttachments.append(
+                Attachment(
                     name: "Сообщение об ошибке",
                     content: .text(interactionFailure.testFailureDescription())
                 )
             )
-            stepArtifacts.append(contentsOf: interactionFailure.attachments)
+            stepAttachments.append(contentsOf: allAttachments(interactionFailure: interactionFailure))
             // TODO: Additional attachments?
             wasSuccessful = false
         }
         
-        stepArtifacts.append(
-            contentsOf: screenshotAttachmentsMaker.makeScreenshotArtifacts(
+        stepAttachments.append(
+            contentsOf: screenshotAttachmentsMaker.makeScreenshotAttachments(
                 beforeStep: false,
                 includeHash: !wasSuccessful
             )
         )
         
         return StepLogAfter(
+            date: dateProvider.currentDate(),
             wasSuccessful: wasSuccessful,
-            artifacts: stepArtifacts
+            attachments: stepAttachments
         )
     }
     
-    private func fileLineArtifact(fileLine: FileLine) -> Artifact {
-        return Artifact(
+    private func allAttachments(interactionFailure: InteractionFailure) -> [Attachment] {
+        return interactionFailure.attachments + interactionFailure.nestedFailures.flatMap {
+            allAttachments(interactionFailure: $0)
+        }
+    }
+    
+    private func fileLineAttachment(fileLine: FileLine) -> Attachment {
+        return Attachment(
             name: "File and line",
             content: .text("\(fileLine.file):\(fileLine.line)")
         )

@@ -12,11 +12,11 @@ use_frameworks!
 def mixbox_ui_tests_pods
   pod 'MixboxTestsFoundation', :path => '..'
   pod 'MixboxUiTestsFoundation', :path => '..'
-  pod 'MixboxArtifacts', :path => '..'
-  pod 'MixboxReporting', :path => '..'
   pod 'MixboxFoundation', :path => '..'
+  pod 'MixboxDi', :path => '..'
   
-  pod 'SQLite.swift', '0.11.5'
+  pod 'SQLite.swift', :inhibit_warnings => true
+  pod 'Dip', :inhibit_warnings => true
 end
 
 def mixbox_application_testability_and_ui_tests_common_pods
@@ -45,7 +45,7 @@ def mixbox_blackbox_tests_pods
   mixbox_application_testability_and_blackbox_testing_common_pods
 
   pod 'MixboxIpcSbtuiClient', :path => '..'
-  pod 'MixboxXcuiDriver', :path => '..'
+  pod 'MixboxBlack', :path => '..'
 end
 
 def mixbox_graybox_tests_pods
@@ -66,13 +66,9 @@ def tests_ipc_pods
   pod 'TestsIpc', :path => 'Frameworks/TestsIpc'
 end
 
-def tests_report_pods
-  pod 'MixboxAllure', :path => '..'
-end
-
 # TODO: Support mock generation for every test target
 def tests_testing_helpers
-  pod 'Cuckoo', '0.12.1'
+  pod 'Cuckoo', { :git => 'https://github.com/avito-tech/Cuckoo', :inhibit_warnings => true }
 end
 
 ### Tests-specific facades
@@ -80,15 +76,17 @@ end
 def tests_black_box_pods
   mixbox_blackbox_tests_pods
   
+  tests_testing_helpers
+  
   tests_ipc_pods
-  tests_report_pods
 end
 
 def tests_gray_box_pods
   mixbox_graybox_tests_pods
   
+  tests_testing_helpers
+  
   tests_ipc_pods
-  tests_report_pods
 end
 
 def tests_white_box_pods
@@ -98,6 +96,7 @@ def tests_white_box_pods
   
   # Code being tested:
   mixbox_ui_tests_pods
+  mixbox_application_testability_pods
 end
 
 def tests_tested_app_pods
@@ -133,7 +132,7 @@ target 'HostedAppLogicTests' do
 end
 
 target 'Lint' do
-  pod 'SwiftLint'
+  pod 'SwiftLint', :inhibit_warnings => true
 end
 
 post_install do |installer|

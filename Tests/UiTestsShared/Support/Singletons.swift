@@ -1,8 +1,5 @@
 import MixboxTestsFoundation
 import MixboxUiTestsFoundation
-import MixboxArtifacts
-import MixboxReporting
-import MixboxAllure
 
 // Singletons are necessary, because we have 2 entry points:
 // - PrincipalClass (entry and exit of test bundle)
@@ -11,11 +8,18 @@ import MixboxAllure
 // Do not add here anything that can be initialized in a single entry point.
 
 final class Singletons {
-    static let stepLogger: StepLogger = recodableStepLogger
-    static let stepLogsProvider: StepLogsProvider = recodableStepLogger
-    static let stepLoggerRecordingStarter: StepLoggerRecordingStarter = recodableStepLogger
+    static let stepLogger: StepLogger = recordableStepLogger
+    static let stepLogsProvider: StepLogsProvider = recordableStepLogger
+    static let stepLoggerRecordingStarter: StepLoggerRecordingStarter = recordableStepLogger
+    static let stepLogsCleaner: StepLogsCleaner = recordableStepLogger
     
-    private static let recodableStepLogger = RecodableStepLogger(
+    private static let recordableStepLogger = RecordableStepLogger(
         payloadLogger: StepLoggerImpl()
     )
+
+    // Usage of XCTActivity crashes fbxctest, so we have to not use it.
+    static var enableXctActivityLogging: Bool {
+        // TODO: Get rid of usage of ProcessInfo singleton and also of this bool.
+        return ProcessInfo.processInfo.environment["MIXBOX_CI_USES_FBXCTEST"] != "true"
+    }
 }

@@ -1,9 +1,8 @@
 import MixboxFoundation
 import MixboxTestsFoundation
-import MixboxReporting
 
 public final class RecordingNetworkPlayer: NetworkPlayer {
-    private let startOnceToken = ThreadUnsafeOnceToken()
+    private let startOnceToken = ThreadUnsafeOnceToken<Void>()
     private let networkRecordsProvider: NetworkRecordsProvider
     private let networkRecorderLifecycle: NetworkRecorderLifecycle
     private let testFailureRecorder: TestFailureRecorder
@@ -11,7 +10,7 @@ public final class RecordingNetworkPlayer: NetworkPlayer {
     private let recordedStubFromMonitoredNetworkRequestConverter: RecordedStubFromMonitoredNetworkRequestConverter
     private let idForCallOfCheckpointFunctionInserter: IdForCallOfCheckpointFunctionInserter
     private let recordedNetworkSessionWriter: RecordedNetworkSessionWriter
-    private let spinner: Spinner
+    private let waiter: RunLoopSpinningWaiter
     private let onStart: () -> ()
     
     // MARK: - State
@@ -23,7 +22,7 @@ public final class RecordingNetworkPlayer: NetworkPlayer {
         networkRecordsProvider: NetworkRecordsProvider,
         networkRecorderLifecycle: NetworkRecorderLifecycle,
         testFailureRecorder: TestFailureRecorder,
-        spinner: Spinner,
+        waiter: RunLoopSpinningWaiter,
         recordedNetworkSessionPath: String,
         onStart: @escaping () -> ())
     {
@@ -31,7 +30,7 @@ public final class RecordingNetworkPlayer: NetworkPlayer {
         self.networkRecorderLifecycle = networkRecorderLifecycle
         self.recordedNetworkSessionPath = recordedNetworkSessionPath
         self.testFailureRecorder = testFailureRecorder
-        self.spinner = spinner
+        self.waiter = waiter
         self.onStart = onStart
         
         // TODO: DI or am I crazy?
@@ -66,7 +65,7 @@ public final class RecordingNetworkPlayer: NetworkPlayer {
     }
     
     private func startOnce() {
-        startOnceToken.executeOnce {
+        _ = startOnceToken.executeOnce {
             networkRecorderLifecycle.startRecording()
             
             testFailureRecorder.recordFailure(
@@ -84,7 +83,7 @@ public final class RecordingNetworkPlayer: NetworkPlayer {
         var requests = networkRecordsProvider.allRequests
         var sleptAtLeastOnce = false
         
-        spinner.spin(
+        waiter.wait(
             timeout: 20,
             interval: 5,
             until: { [networkRecordsProvider] in

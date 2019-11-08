@@ -9,17 +9,24 @@ Pod::Spec.new do |s|
   s.source                 = { :git => 'https://github.com/avito-tech/Mixbox.git', :branch => "master" }
   s.platform               = :ios, '9.0'
   s.ios.deployment_target = "9.0"
-  s.swift_version = '4.2'
+  s.swift_version = '5.0'
   s.requires_arc = true
-  s.source_files = 'Frameworks/UiTestsFoundation/**/*.{swift,h,m}'
+  s.source_files = 'Frameworks/UiTestsFoundation/**/*.{swift,h,m,mm}'
   
   s.dependency 'MixboxTestsFoundation'
-  s.dependency 'MixboxReporting'
   s.dependency 'MixboxUiKit'
   s.dependency 'MixboxAnyCodable'
   s.dependency 'CocoaImageHashing'
   s.dependency 'MixboxIpcCommon'
+  s.dependency 'MixboxDi'
 
   s.frameworks = 'XCTest'
-  s.user_target_xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '$(PLATFORM_DIR)/Developer/Library/Frameworks' }
+  
+  s.user_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '$(PLATFORM_DIR)/Developer/Library/Frameworks'
+  }
+  
+  s.xcconfig = {
+    'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift-$(SWIFT_VERSION)/$(PLATFORM_NAME) $(inherited)'
+  }
 end

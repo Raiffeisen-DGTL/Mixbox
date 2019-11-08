@@ -1,15 +1,16 @@
 import MixboxUiTestsFoundation
+import MixboxTestsFoundation
 
 final class AssertIsNotDisplayedInteractionTests: BaseChecksTestCase {
-    func test_assert_passes_immediately_ifUiAppearsImmediately_0() {
-        checkAssert_passes_immediately_ifUiAppearsImmediately(passingAssertSpecification0)
+    func test___assertIsNotDisplayed___passes_immediately___if_ui_appears_immediately_0() {
+        check___assert_passes_immediately___if_ui_appears_immediately(passingAssertSpecification0)
     }
     
-    func test_assert_passes_immediately_ifUiAppearsImmediately_1() {
-        checkAssert_passes_immediately_ifUiAppearsImmediately(passingAssertSpecification1)
+    func test___assertIsNotDisplayed___passes_immediately___if_ui_appears_immediately_1() {
+        check___assert_passes_immediately___if_ui_appears_immediately(passingAssertSpecification1)
     }
     
-    func test_assert_fails_immediately_ifUiDoesntAppearImmediately() {
+    func test___assertIsNotDisplayed___fails_immediately___if_ui_doesnt_appear_immediately() {
         checkAssert(
             passes: false,
             immediately: true,
@@ -18,7 +19,7 @@ final class AssertIsNotDisplayedInteractionTests: BaseChecksTestCase {
         )
     }
     
-    func test_assert_passes_notImmediately_ifUiDoesntAppearImmediately() {
+    func test___assertIsNotDisplayed___passes_not_immediately___if_ui_doesnt_appear_immediately() {
         checkAssert(
             passes: true,
             immediately: false,
@@ -41,7 +42,7 @@ final class AssertIsNotDisplayedInteractionTests: BaseChecksTestCase {
     //
     // `waitedForUi` argument guarantees that `assertIsNotDisplayed` will be executed after `waitUntilDisplayed`
     //
-    func test_assertIsNotDisplayed_waitsForElement_andFailsIfItAppearsAfterSomeDelay() {
+    func test___assertIsNotDisplayed___waits_for_element_and_fails_if_it_appears_after_some_delay() {
         checkAssert(
             passes: false,
             immediately: false,
@@ -72,7 +73,7 @@ final class AssertIsNotDisplayedInteractionTests: BaseChecksTestCase {
     }
     
     // TODO: Fix description of check. Failure message is far from perfect.
-    func test_assert_failsProperlyIfElementIsDisplayed() {
+    func test___assertIsNotDisplayed___fails_properly_if_element_is_displayed() {
         reloadViewAndWaitUntilItIsLoaded()
         
         let logsAndFailures = recordLogsAndFailures {
@@ -85,14 +86,21 @@ final class AssertIsNotDisplayedInteractionTests: BaseChecksTestCase {
         
         assert(logsAndFailures: logsAndFailures) { logsAndFailures in
             logsAndFailures.logs.contains { log in
-                log.steps.contains { log in
+                let hasSearchLogs = log.steps.contains { log in
                     hasDefaultSearchLogs(
                         log: log,
                         failureMessage: failureMessage,
                         // search isn't failed, because element was found. screenshot hash is generated only for fails
-                        withScreenshotHashArtifact: false
+                        withScreenshotHashAttachment: false
                     )
                 }
+                
+                let hasErrorMessageAttachment = log.attachmentsAfter.contains { attachment in
+                    attachment.name == "Сообщение об ошибке"
+                        && attachment.content == AttachmentContent.text(failureMessage)
+                }
+                
+                return hasSearchLogs && hasErrorMessageAttachment
             }
         }
         

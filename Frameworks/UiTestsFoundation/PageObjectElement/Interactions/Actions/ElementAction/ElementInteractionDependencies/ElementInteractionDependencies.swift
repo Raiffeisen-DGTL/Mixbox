@@ -1,4 +1,5 @@
 import MixboxFoundation
+import MixboxIpcCommon
 
 // Isolates Actions of testing technology (XCTest vs GrayBox).
 // Contains technology dependent
@@ -16,4 +17,5 @@ public protocol ElementInteractionDependencies: class {
     var interactionRetrier: InteractionRetrier { get }
     var interactionResultMaker: InteractionResultMaker { get }
     var elementMatcherBuilder: ElementMatcherBuilder { get }
+    var signpostActivityLogger: SignpostActivityLogger { get }
 }

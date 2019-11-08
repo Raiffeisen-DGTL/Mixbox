@@ -8,6 +8,8 @@ import TestsIpc
 // NOTE: IpcCallback is an experimental feature.
 class IpcCallbacksTests: TestCase {
     override func precondition() {
+        super.precondition()
+        
         launch(environment: [:], useBuiltinIpc: true)
     }
     
@@ -41,7 +43,7 @@ class IpcCallbacksTests: TestCase {
             result = res.data
         }
         
-        spinner.spin(timeout: 1)
+        waiter.wait(timeout: 1)
         
         XCTAssertEqual(result, [4, 2])
     }
@@ -55,10 +57,10 @@ class IpcCallbacksTests: TestCase {
             method: NestedCallbacksToAppIpcMethod(),
             arguments: NestedCallbacksToAppIpcMethod.Arguments(
                 sleepInterval: sleepInterval,
-                callback: .async { [spinner] _, completion in
+                callback: .async { [waiter] _, completion in
                     calls.append(1)
                     
-                    spinner.spin(timeout: sleepInterval)
+                    waiter.wait(timeout: sleepInterval)
                     
                     completion(
                         .async { _, completion in
@@ -70,7 +72,7 @@ class IpcCallbacksTests: TestCase {
             )
         )
         
-        spinner.spin(timeout: 1)
+        waiter.wait(timeout: 1)
         
         XCTAssertEqual(calls, [1, 2])
     }

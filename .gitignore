@@ -8,6 +8,7 @@
 xcuserdata
 xcuserdata/
 *.xccheckout
+*.xcworkspacedata
 *.xcuserstate
 *.xcscmblueprint
 *.orig
@@ -24,6 +25,9 @@ Carthage/
 __pycache__/
 dist/
 .pytest_cache/
+.python-version
+.mypy_cache/
+.coverage
 *.egg-info
 *.pyc
 
@@ -35,3 +39,4 @@ dist/
 
 # Swift package manager
 .build/
+*.d

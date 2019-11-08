@@ -2,7 +2,6 @@ import MixboxUiTestsFoundation
 import MixboxTestsFoundation
 import MixboxIpcCommon
 import MixboxFoundation
-import MixboxReporting
 
 public class GrayBoxLegacyNetworkStubbingBridgedUrlProtocolClass:
     BridgedUrlProtocolClass,
@@ -58,8 +57,7 @@ public class GrayBoxLegacyNetworkStubbingBridgedUrlProtocolClass:
         }
         
         return GrayBoxLegacyNetworkStubbingBridgedUrlProtocolInstance(
-            request: request,
-            cachedResponse: cachedResponse,
+            url: request.url,
             client: client,
             stub: stub,
             bundleResourcePathProvider: bundleResourcePathProvider

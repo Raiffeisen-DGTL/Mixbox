@@ -1,5 +1,5 @@
 import MixboxTestsFoundation
-import MixboxReporting
+import MixboxFoundation
 
 public final class PageObjectElementFactoryImpl: PageObjectElementFactory {
     // MARK: - Private properties
@@ -12,6 +12,8 @@ public final class PageObjectElementFactoryImpl: PageObjectElementFactory {
     // TODO: This is a kludge, usage of closure is dumb here.
     private let elementInteractionDependenciesFactory: (ElementSettings) -> ElementInteractionDependenciesFactory
     
+    private let signpostActivityLogger: SignpostActivityLogger
+    
     // MARK: - Init
     
     public init(
@@ -19,13 +21,15 @@ public final class PageObjectElementFactoryImpl: PageObjectElementFactory {
         screenshotAttachmentsMaker: ScreenshotAttachmentsMaker,
         stepLogger: StepLogger,
         dateProvider: DateProvider,
-        elementInteractionDependenciesFactory: @escaping (ElementSettings) -> ElementInteractionDependenciesFactory)
+        elementInteractionDependenciesFactory: @escaping (ElementSettings) -> ElementInteractionDependenciesFactory,
+        signpostActivityLogger: SignpostActivityLogger)
     {
         self.testFailureRecorder = testFailureRecorder
         self.screenshotAttachmentsMaker = screenshotAttachmentsMaker
         self.stepLogger = stepLogger
         self.dateProvider = dateProvider
         self.elementInteractionDependenciesFactory = elementInteractionDependenciesFactory
+        self.signpostActivityLogger = signpostActivityLogger
     }
     
     // MARK: - PageObjectElementFactory
@@ -42,7 +46,8 @@ public final class PageObjectElementFactoryImpl: PageObjectElementFactory {
                 stepLogger: stepLogger,
                 dateProvider: dateProvider,
                 elementInteractionDependenciesFactory: elementInteractionDependenciesFactory(elementSettings),
-                elementSettings: elementSettings
+                elementSettings: elementSettings,
+                signpostActivityLogger: signpostActivityLogger
             )
         )
     }

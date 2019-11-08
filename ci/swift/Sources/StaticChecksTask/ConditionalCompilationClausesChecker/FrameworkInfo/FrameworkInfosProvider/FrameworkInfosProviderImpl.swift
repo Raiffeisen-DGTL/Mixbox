@@ -1,3 +1,16 @@
+// This info (`FrameworkInfo`) is used to check that no testing code leaks to production,
+// if it is accidentally linked in release build. It acts as an additional protective measure.
+//
+// Example: `InAppServices` is linked to app directly. Every source inside this framework should contain
+// `#if MIXBOX_ENABLE_IN_APP_SERVICES` + `#endif` to disable compilation if it is accidentally linked in release.
+//
+// So `requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds` is `true`.
+//
+// `Foundation` is a dependency of `InAppServices`. So the bool should be also `true`
+//
+// Note that ideally there should be runtime generation of graph of dependencies and only leaves should be marked
+// as frameworks that are linked to app - `InAppServices` & `Testability`. But a hardcoded bool works kind of okay.
+//
 public final class FrameworkInfosProviderImpl: FrameworkInfosProvider {
     public init() {
     }
@@ -6,76 +19,68 @@ public final class FrameworkInfosProviderImpl: FrameworkInfosProvider {
     public func frameworkInfos() -> [FrameworkInfo] {
         return [
             FrameworkInfo(
-                name: "Allure",
-                needsIfs: false
-            ),
-            FrameworkInfo(
                 name: "AnyCodable",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
-                name: "Artifacts",
-                needsIfs: false
+                name: "Black",
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             ),
             FrameworkInfo(
                 name: "BuiltinIpc",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
+            ),
+            FrameworkInfo(
+                name: "Di",
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             ),
             FrameworkInfo(
                 name: "FakeSettingsAppMain",
-                needsIfs: false
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             ),
             FrameworkInfo(
                 name: "Foundation",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "Gray",
-                needsIfs: false
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             ),
             FrameworkInfo(
                 name: "InAppServices",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "Ipc",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "IpcCommon",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "IpcSbtuiClient",
-                needsIfs: false
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             ),
             FrameworkInfo(
                 name: "IpcSbtuiHost",
-                needsIfs: true
-            ),
-            FrameworkInfo(
-                name: "Reporting",
-                needsIfs: false
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "Testability",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "TestsFoundation",
-                needsIfs: false
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             ),
             FrameworkInfo(
                 name: "UiKit",
-                needsIfs: true
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: true
             ),
             FrameworkInfo(
                 name: "UiTestsFoundation",
-                needsIfs: false
-            ),
-            FrameworkInfo(
-                name: "XcuiDriver",
-                needsIfs: false
+                requiresConditionalCompilationClausesToDisableCodeInReleaseBuilds: false
             )
         ]
     }

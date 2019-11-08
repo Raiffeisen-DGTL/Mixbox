@@ -1,4 +1,4 @@
-import MixboxXcuiDriver
+import MixboxBlack
 import XCTest
 import TestsIpc
 import MixboxUiTestsFoundation
@@ -27,9 +27,9 @@ final class LaunchingAppTests: TestCase {
         let launchableApplication = SbtuiLaunchableApplication(
             tunneledApplication: SBTUITunneledApplication(),
             applicationLifecycleObservable: applicationLifecycleObservable,
-            testFailureRecorder: testCaseUtils.baseUiTestCaseUtils.testFailureRecorder,
-            bundleResourcePathProvider: testCaseUtils.baseUiTestCaseUtils.bundleResourcePathProviderForTestTarget,
-            spinner: spinner,
+            testFailureRecorder: dependencies.resolve(),
+            bundleResourcePathProvider: bundleResourcePathProviderForTestsTarget,
+            waiter: waiter,
             networkReplayingObserver: DummyNetworkReplayingObserver()
         )
         

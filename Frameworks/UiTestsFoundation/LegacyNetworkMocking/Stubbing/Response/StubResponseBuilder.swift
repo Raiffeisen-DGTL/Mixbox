@@ -1,10 +1,11 @@
+import MixboxIpcCommon
+
 public protocol StubResponseBuilder: class {
     // Do not use directly, use functions from extensions.
     // This function should be used only for implementing basic functionality.
     func withResponse(
         value: StubResponseBuilderResponseValue,
-        headers: [String: String],
-        statusCode: Int,
+        variation: URLResponseProtocolVariation,
         responseTime: TimeInterval)
 }
 
@@ -17,8 +18,12 @@ extension StubResponseBuilder {
     {
         return withResponse(
             value: .file(file),
-            headers: headers,
-            statusCode: statusCode,
+            variation: .http(
+                HTTPURLResponseVariation(
+                    headers: headers,
+                    statusCode: statusCode
+                )
+            ),
             responseTime: responseTime
         )
     }
@@ -31,8 +36,12 @@ extension StubResponseBuilder {
     {
         return withResponse(
             value: .string(string),
-            headers: headers,
-            statusCode: statusCode,
+            variation: .http(
+                HTTPURLResponseVariation(
+                    headers: headers,
+                    statusCode: statusCode
+                )
+            ),
             responseTime: responseTime
         )
     }
@@ -45,8 +54,32 @@ extension StubResponseBuilder {
     {
         return withResponse(
             value: .data(data),
-            headers: headers,
-            statusCode: statusCode,
+            variation: .http(
+                HTTPURLResponseVariation(
+                    headers: headers,
+                    statusCode: statusCode
+                )
+            ),
+            responseTime: responseTime
+        )
+    }
+    
+    public func thenReturn(
+        data: Data,
+        mimeType: String?,
+        expectedContentLength: Int64,
+        textEncodingName: String?,
+        responseTime: TimeInterval = 0
+    ) {
+        return withResponse(
+            value: .data(data),
+            variation: .bare(
+                BareURLResponseVariation(
+                    mimeType: mimeType,
+                    expectedContentLength: expectedContentLength,
+                    textEncodingName: textEncodingName
+                )
+            ),
             responseTime: responseTime
         )
     }

@@ -1,7 +1,5 @@
 import MixboxUiTestsFoundation
 import MixboxTestsFoundation
-import MixboxGray
-import MixboxReporting
 
 public final class GrayBoxLegacyNetworking: LegacyNetworking {
     public let stubbing: LegacyNetworkStubbing
@@ -13,13 +11,13 @@ public final class GrayBoxLegacyNetworking: LegacyNetworking {
     public init(
         urlProtocolStubAdder: UrlProtocolStubAdder,
         testFailureRecorder: TestFailureRecorder,
-        spinner: Spinner,
+        waiter: RunLoopSpinningWaiter,
         bundleResourcePathProvider: BundleResourcePathProvider)
     {
         self.stubbing = GrayBoxLegacyNetworkStubbing(
             urlProtocolStubAdder: urlProtocolStubAdder,
             testFailureRecorder: testFailureRecorder,
-            spinner: spinner,
+            waiter: waiter,
             bundleResourcePathProvider: bundleResourcePathProvider
         )
     }

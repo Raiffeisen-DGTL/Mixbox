@@ -9,8 +9,8 @@ final class RecordingNetworkPlayerTests: BaseNetworkMockingTestCase {
     private lazy var recordingPlayer = RecordingNetworkPlayer(
         networkRecordsProvider: legacyNetworking.recording,
         networkRecorderLifecycle: legacyNetworking.recording,
-        testFailureRecorder: testCaseUtils.baseUiTestCaseUtils.testFailureRecorder,
-        spinner: spinner,
+        testFailureRecorder: dependencies.resolve(),
+        waiter: waiter,
         recordedNetworkSessionPath: recordedNetworkSessionFile.path,
         onStart: {}
     )
