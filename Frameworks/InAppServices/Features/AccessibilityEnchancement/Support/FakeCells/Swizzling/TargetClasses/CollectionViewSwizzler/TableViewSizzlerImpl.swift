@@ -13,7 +13,7 @@ import MixboxFoundation
 // TODO: Split. swiftlint:disable file_length
 public final class TableViewSizzlerImpl: TableViewSwizzler {
     private let assertingSwizzler: AssertingSwizzler
-    private let onceToken = ThreadUnsafeOnceToken()
+    private let onceToken = ThreadUnsafeOnceToken<Void>()
 
     public init(assertingSwizzler: AssertingSwizzler) {
         self.assertingSwizzler = assertingSwizzler

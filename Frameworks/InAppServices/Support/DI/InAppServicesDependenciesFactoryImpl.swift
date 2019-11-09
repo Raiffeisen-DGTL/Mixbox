@@ -94,8 +94,7 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
         )
 
         tableViewCellSwizzler = TableViewCellSwizzlerImpl(
-            assertingSwizzler: assertingSwizzler,
-            shouldAddAssertionForCallingIsHiddenOnFakeCell: shouldAddAssertionForCallingIsHiddenOnFakeCell)
+            assertingSwizzler: assertingSwizzler)
 
         tableViewSwizzler = TableViewSizzlerImpl(
             assertingSwizzler: assertingSwizzler

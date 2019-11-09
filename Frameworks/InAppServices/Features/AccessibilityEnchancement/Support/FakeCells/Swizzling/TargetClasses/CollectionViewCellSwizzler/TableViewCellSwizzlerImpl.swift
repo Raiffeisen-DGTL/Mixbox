@@ -12,17 +12,12 @@ import MixboxFoundation
 
 public final class TableViewCellSwizzlerImpl: TableViewCellSwizzler {
     private let assertingSwizzler: AssertingSwizzler
-    private let shouldAddAssertionForCallingIsHiddenOnFakeCell: Bool
-    private let onceToken = ThreadUnsafeOnceToken()
+    private let onceToken = ThreadUnsafeOnceToken<Void>()
 
     public init(
-        assertingSwizzler: AssertingSwizzler,
-        // The assert is important, but it adds some side-effects that may break some tests,
-        // in that case you can disable it and use it only in tests on this feature
-        shouldAddAssertionForCallingIsHiddenOnFakeCell: Bool)
+        assertingSwizzler: AssertingSwizzler)
     {
         self.assertingSwizzler = assertingSwizzler
-        self.shouldAddAssertionForCallingIsHiddenOnFakeCell = shouldAddAssertionForCallingIsHiddenOnFakeCell
     }
 
     public func swizzle() {
@@ -46,9 +41,7 @@ public final class TableViewCellSwizzlerImpl: TableViewCellSwizzler {
 
         swizzle(
             originalSelector: #selector(getter: UIView.isHidden),
-            swizzledSelector: shouldAddAssertionForCallingIsHiddenOnFakeCell
-                ? #selector(UITableViewCell.swizzled_TableViewCellSwizzler_isHidden_withAssertion)
-                : #selector(UITableViewCell.swizzled_TableViewCellSwizzler_isHidden),
+            swizzledSelector: #selector(UICollectionViewCell.swizzled_TableViewCellSwizzler_isHidden),
             shouldAssertIfMethodIsSwizzledOnlyOneTime: true
         )
     }
