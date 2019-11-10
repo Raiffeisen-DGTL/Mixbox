@@ -93,21 +93,18 @@ extension UIView {
 
     @objc fileprivate func swizzled_TableViewCellSwizzler_isHidden_withAssertion() -> Bool {
         return isHidden(
-            originalImplementation: swizzled_TableViewCellSwizzler_isHidden_withAssertion,
-            withAssertion: false
+            originalImplementation: swizzled_TableViewCellSwizzler_isHidden_withAssertion
         )
     }
 
     @objc fileprivate func swizzled_TableViewCellSwizzler_isHidden() -> Bool {
         return isHidden(
-            originalImplementation: swizzled_TableViewCellSwizzler_isHidden,
-            withAssertion: false
+            originalImplementation: swizzled_TableViewCellSwizzler_isHidden
         )
     }
 
     @nonobjc private func isHidden(
-        originalImplementation: () -> Bool,
-        withAssertion: Bool)
+        originalImplementation: () -> Bool)
         -> Bool
     {
         guard let tableViewCell = self as? UITableViewCell else {
@@ -115,9 +112,6 @@ extension UIView {
         }
 
         if tableViewCell.mb_isFakeCell() {
-            if withAssertion {
-                assertionFailure("isHidden should never be called for a fake cell")
-            }
 
             // We are relatively safe to alter isHidden if the cell is not in hierarchy,
             // E.g. isHidden can be used on fake cells when they are being set up.
@@ -127,6 +121,7 @@ extension UIView {
                 return true
             }
         }
+        
 
         return originalImplementation()
     }
