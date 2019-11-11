@@ -285,7 +285,7 @@ final class ScrollingContext {
             from: draggingInstruction.initialTouchPoint,
             to: draggingInstruction.targetTouchPoint,
             durationOfInitialPress: 0,
-            velocity: 500,
+            velocity: 10000,
             cancelInertia: true
         )
     }
