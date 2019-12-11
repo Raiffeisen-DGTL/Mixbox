@@ -15,4 +15,5 @@ Pod::Spec.new do |s|
   
   s.dependency 'MixboxIpc'
   s.dependency 'SBTUITestTunnelServer'
+  s.dependency 'SBTUITestTunnelCommon'
 end
