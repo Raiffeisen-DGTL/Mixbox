@@ -1,7 +1,7 @@
 import MixboxUiTestsFoundation
 import MixboxTestsFoundation
 import MixboxIpcCommon
-import SBTUITestTunnelClient
+import SBTUITestTunnel
 import MixboxIpcSbtuiClient
 
 public final class SbtuiLaunchableApplication: LaunchableApplication {
