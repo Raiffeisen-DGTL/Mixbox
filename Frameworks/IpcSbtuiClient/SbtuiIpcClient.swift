@@ -1,6 +1,6 @@
 import MixboxFoundation
 import MixboxIpc
-import SBTUITestTunnelClient
+import SBTUITestTunnel
 
 public final class SbtuiIpcClient: IpcClient {
     private let application: SBTUITunneledApplication
