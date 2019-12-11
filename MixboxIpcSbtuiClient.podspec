@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
   
   s.dependency 'MixboxIpc'
   s.dependency 'SBTUITestTunnelClient'
+  s.dependency 'SBTUITestTunnelCommon'
   
   # for network mocks,  kind of a kludge, but SBTUITestTunnel should be removed soon:
   s.dependency 'MixboxTestsFoundation' 
