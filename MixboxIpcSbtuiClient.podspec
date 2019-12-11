@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source_files           = 'Frameworks/IpcSbtuiClient/**/*.{swift,h,m,mm}'
   
   s.dependency 'MixboxIpc'
-  s.dependency 'SBTUITestTunnel/Client', '4.0'
+  s.dependency 'SBTUITestTunnelClient'
   
   # for network mocks,  kind of a kludge, but SBTUITestTunnel should be removed soon:
   s.dependency 'MixboxTestsFoundation' 
