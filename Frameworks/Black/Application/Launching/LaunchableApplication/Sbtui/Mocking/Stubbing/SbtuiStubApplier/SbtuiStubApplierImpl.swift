@@ -1,4 +1,4 @@
-import SBTUITestTunnelClient
+import SBTUITestTunnel
 import MixboxFoundation
 
 public final class SbtuiStubApplierImpl: SbtuiStubApplier, ApplicationLifecycleObserver {
