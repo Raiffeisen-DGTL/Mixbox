@@ -3,6 +3,38 @@
 import MixboxTestability
 
 public final class FakeCellManagerImpl: FakeCellManager {
+    public func createFakeCellInside(closure: () -> (UITableViewCell)) -> UITableViewCell {
+        fakeCellIsBeingCreatedAtTheMoment.value = true
+        let value = closure()
+        fakeCellIsBeingCreatedAtTheMoment.value = false
+        return value
+    }
+
+    public func isFakeCell(forCell cell: UITableViewCell) -> Bool {
+        return cell.mb_fakeCellInfo != nil || fakeCellIsBeingCreatedAtTheMoment.value == true
+    }
+
+    public func startTableViewUpdates(forTableView tableView: UITableView) -> MixboxTableViewUpdatesActivity {
+        tableView.startTableViewUpdates()
+
+        return MixboxTableViewUpdatesActivityImpl(
+            tableView: tableView
+        )
+    }
+
+    public func getConfigureAsFakeCell(forCell cell: UITableViewCell) -> (() -> ())? {
+        return objc_getAssociatedObject(cell, &configureAsFakeCell_associatedObjectKey) as? (() -> ())
+    }
+
+    public func setConfigureAsFakeCell(configureAsFakeCell: (() -> ())?, forCell cell: UITableViewCell) {
+        objc_setAssociatedObject(
+            cell,
+            &configureAsFakeCell_associatedObjectKey,
+            configureAsFakeCell,
+            .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+        )
+    }
+
     public init() {
     }
     

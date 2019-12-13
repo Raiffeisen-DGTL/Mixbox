@@ -16,6 +16,8 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
     public let fakeCellsSwizzling: FakeCellsSwizzling
     public let collectionViewCellSwizzler: CollectionViewCellSwizzler
     public let collectionViewSwizzler: CollectionViewSwizzler
+    public let tableViewCellSwizzler: TableViewCellSwizzler
+    public let tableViewSwizzler: TableViewSwizzler
     public let fakeCellManager: FakeCellManager
     public let keyboardEventInjector: KeyboardEventInjector
     public let scrollViewIdlingResourceSwizzler: ScrollViewIdlingResourceSwizzler
@@ -91,10 +93,19 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
         collectionViewSwizzler = CollectionViewSwizzlerImpl(
             assertingSwizzler: assertingSwizzler
         )
+
+        tableViewCellSwizzler = TableViewCellSwizzlerImpl(
+            assertingSwizzler: assertingSwizzler)
+
+        tableViewSwizzler = TableViewSizzlerImpl(
+            assertingSwizzler: assertingSwizzler
+        )
         
         fakeCellsSwizzling = FakeCellsSwizzlingImpl(
             collectionViewCellSwizzler: collectionViewCellSwizzler,
-            collectionViewSwizzler: collectionViewSwizzler
+            collectionViewSwizzler: collectionViewSwizzler,
+            tableViewCellSwizzler: tableViewCellSwizzler,
+            tableViewSwizzler: tableViewSwizzler
         )
         
         fakeCellManager = FakeCellManagerImpl()

@@ -3,7 +3,9 @@
 // TODO: Split everywhere, remove this protocol:
 public protocol FakeCellManager:
     FakeCellManagerForCollectionView,
-    FakeCellManagerForCollectionViewCell
+    FakeCellManagerForCollectionViewCell,
+    FakeCellManagerForTableView,
+    FakeCellManagerForTableViewCell
 {
 }
 

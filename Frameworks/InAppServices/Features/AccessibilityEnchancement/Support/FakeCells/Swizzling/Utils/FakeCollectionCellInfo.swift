@@ -3,7 +3,7 @@
 import MixboxFoundation
 import UIKit
 
-final class FakeCellInfo {
+final class FakeCollectionCellInfo {
     let indexPath: IndexPath
     var parentCollectionView: UICollectionView? {
         return parentCollectionViewBox.value
