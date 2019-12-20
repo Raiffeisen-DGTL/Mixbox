@@ -22,7 +22,8 @@ public final class XcuiElementFinder: ElementFinder {
     }
     
     public func query(
-        elementMatcher: ElementMatcher)
+        elementMatcher: ElementMatcher,
+        elementFunctionDeclarationLocation: FunctionDeclarationLocation)
         -> ElementQuery
     {
         let elementQueryResolvingState = ElementQueryResolvingState()
@@ -32,7 +33,7 @@ public final class XcuiElementFinder: ElementFinder {
                 block: { snapshot, _ -> Bool in
                     if let snapshot = snapshot as? XCElementSnapshot {
                         let elementSnapshot = XcuiElementSnapshot(snapshot)
-                        let matchingResult = elementMatcher.matches(value: elementSnapshot)
+                        let matchingResult = elementMatcher.match(value: elementSnapshot)
                         
                         elementQueryResolvingState.append(
                             matchingResult: matchingResult,
@@ -53,7 +54,8 @@ public final class XcuiElementFinder: ElementFinder {
             stepLogger: stepLogger,
             screenshotTaker: screenshotTaker,
             applicationProvider: applicationProviderThatDropsCaches,
-            dateProvider: dateProvider
+            dateProvider: dateProvider,
+            elementFunctionDeclarationLocation: elementFunctionDeclarationLocation
         )
     }
 }

@@ -3,31 +3,33 @@ import XCTest
 
 final class ElementSettingsTests: TestCase {
     let elementSettings = ElementSettings(
-        elementName: "elementName",
-        fileLine: .current(),
-        function: "function",
+        name: "elementName",
+        functionDeclarationLocation: FunctionDeclarationLocation(
+            fileLine: .current(),
+            function: "function"
+        ),
         matcher: AlwaysTrueMatcher(),
-        searchMode: .scrollUntilFound,
+        scrollMode: .definite,
         interactionTimeout: 15,
         interactionMode: .useUniqueElement
     )
     
     func test___with_name___overrides_name() {
         let name = "otherName"
-        XCTAssertNotEqual(elementSettings.elementName, name)
-        XCTAssertEqual(elementSettings.with(name: name).elementName, name)
+        XCTAssertNotEqual(elementSettings.name, name)
+        XCTAssertEqual(elementSettings.with(name: name).name, name)
     }
     
     func test___with_matcher___overrides_matcher() {
         let matcher = AlwaysFalseMatcher<ElementSnapshot>()
-        XCTAssert(type(of: elementSettings.elementName) != type(of: matcher))
+        XCTAssert(type(of: elementSettings.name) != type(of: matcher))
         XCTAssert(type(of: elementSettings.with(matcher: matcher).matcher) == type(of: matcher))
     }
     
-    func test___with_searchMode___overrides_searchMode() {
-        let searchMode = SearchMode.scrollBlindly
-        XCTAssertNotEqual(elementSettings.searchMode, searchMode)
-        XCTAssertEqual(elementSettings.with(searchMode: searchMode).searchMode, searchMode)
+    func test___with_scrollMode___overrides_scrollMode() {
+        let scrollMode = ScrollMode.blind
+        XCTAssertNotEqual(elementSettings.scrollMode, scrollMode)
+        XCTAssertEqual(elementSettings.with(scrollMode: scrollMode).scrollMode, scrollMode)
     }
     
     func test___with_interactionMode___overrides_interactionMode() {

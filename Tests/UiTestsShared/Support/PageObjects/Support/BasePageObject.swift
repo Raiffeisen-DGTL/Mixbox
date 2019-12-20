@@ -21,8 +21,7 @@ open class BasePageObject: PageObject, PageObjectElementRegistrar {
     
     public func elementImpl<T>(
         name: String,
-        fileLine: FileLine,
-        function: String,
+        functionDeclarationLocation: FunctionDeclarationLocation,
         matcherBuilder: (ElementMatcherBuilder) -> ElementMatcher)
         -> T
         where
@@ -30,14 +29,13 @@ open class BasePageObject: PageObject, PageObjectElementRegistrar {
     {
         return pageObjectElementRegistrar.elementImpl(
             name: name,
-            fileLine: fileLine,
-            function: function,
+            functionDeclarationLocation: functionDeclarationLocation,
             matcherBuilder: matcherBuilder
         )
     }
     
-    public func with(searchMode: SearchMode) -> PageObjectElementRegistrar {
-        return pageObjectElementRegistrar.with(searchMode: searchMode)
+    public func with(scrollMode: ScrollMode) -> PageObjectElementRegistrar {
+        return pageObjectElementRegistrar.with(scrollMode: scrollMode)
     }
     
     public func with(interactionMode: InteractionMode) -> PageObjectElementRegistrar {

@@ -3,19 +3,19 @@ import MixboxFoundation
 public final class PageObjectElementRegistrarImpl: PageObjectElementRegistrar {
     private let pageObjectElementFactory: PageObjectElementFactory
     private let pageObjectElementDependenciesFactory: PageObjectElementDependenciesFactory
-    private let searchMode: SearchMode?
+    private let scrollMode: ScrollMode?
     private let interactionMode: InteractionMode?
     private let elementMatcherBuilder: ElementMatcherBuilder
     
     public init(
         pageObjectElementDependenciesFactory: PageObjectElementDependenciesFactory,
-        searchMode: SearchMode? = nil,
+        scrollMode: ScrollMode? = nil,
         interactionMode: InteractionMode? = nil)
     {
         self.pageObjectElementDependenciesFactory = pageObjectElementDependenciesFactory
         self.pageObjectElementFactory = pageObjectElementDependenciesFactory.pageObjectElementFactory()
         self.elementMatcherBuilder = pageObjectElementDependenciesFactory.matcherBulder()
-        self.searchMode = searchMode
+        self.scrollMode = scrollMode
         self.interactionMode = interactionMode
     }
     
@@ -23,24 +23,22 @@ public final class PageObjectElementRegistrarImpl: PageObjectElementRegistrar {
     
     public func elementImpl<T: ElementWithDefaultInitializer>(
         name: String,
-        fileLine: FileLine,
-        function: String,
+        functionDeclarationLocation: FunctionDeclarationLocation,
         matcherBuilder: ElementMatcherBuilderClosure)
         -> T
     {
         let pageObjectElement = self.pageObjectElement(
             name: name,
-            fileLine: fileLine,
-            function: function,
+            functionDeclarationLocation: functionDeclarationLocation,
             matcherBuilder: matcherBuilder
         )
         return T(implementation: pageObjectElement)
     }
     
-    public func with(searchMode: SearchMode) -> PageObjectElementRegistrar {
+    public func with(scrollMode: ScrollMode) -> PageObjectElementRegistrar {
         return PageObjectElementRegistrarImpl(
             pageObjectElementDependenciesFactory: pageObjectElementDependenciesFactory,
-            searchMode: searchMode,
+            scrollMode: scrollMode,
             interactionMode: interactionMode
         )
     }
@@ -48,7 +46,7 @@ public final class PageObjectElementRegistrarImpl: PageObjectElementRegistrar {
     public func with(interactionMode: InteractionMode) -> PageObjectElementRegistrar {
         return PageObjectElementRegistrarImpl(
             pageObjectElementDependenciesFactory: pageObjectElementDependenciesFactory,
-            searchMode: searchMode,
+            scrollMode: scrollMode,
             interactionMode: interactionMode
         )
     }
@@ -57,18 +55,16 @@ public final class PageObjectElementRegistrarImpl: PageObjectElementRegistrar {
     
     private func pageObjectElement(
         name: String,
-        fileLine: FileLine,
-        function: String,
+        functionDeclarationLocation: FunctionDeclarationLocation,
         matcherBuilder: ElementMatcherBuilderClosure)
         -> PageObjectElement
     {
         return pageObjectElementFactory.pageObjectElement(
             settings: ElementSettings(
-                elementName: name,
-                fileLine: fileLine,
-                function: function,
+                name: name,
+                functionDeclarationLocation: functionDeclarationLocation,
                 matcher: matcherBuilder(elementMatcherBuilder),
-                searchMode: searchMode ?? .default,
+                scrollMode: scrollMode ?? .default,
                 interactionTimeout: nil,
                 interactionMode: interactionMode ?? .default
             )
