@@ -1,4 +1,4 @@
-import SBTUITestTunnel
+import SBTUITestTunnelClient
 import MixboxUiTestsFoundation
 
 public final class SbtuiStubRequest: Hashable {

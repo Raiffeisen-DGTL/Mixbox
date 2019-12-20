@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.homepage               = 'https://github.com/avito-tech/Mixbox'
   s.license                = 'MIT'
   s.author                 = { 'Hive of coders from Avito' => 'avito.ru' }
-  s.source                 = { :git => 'https://github.com/Raiffeisen-DGTL/Mixbox.git', :branch => "master"  }
+  s.source                 = { :git => 'https://github.com/Raiffeisen-DGTL/Mixbox.git', :branch => "removeSBTUI"  }
   s.platform               = :ios, '9.0'
   s.ios.deployment_target  = '9.0'
   s.swift_version          = '5.0'
@@ -14,5 +14,6 @@ Pod::Spec.new do |s|
   s.source_files           = 'Frameworks/IpcSbtuiHost/**/*.{swift,h,m,mm}'
   
   s.dependency 'MixboxIpc'
-  s.dependency 'SBTUITestTunnel/Server', '3.0.6'
+  s.dependency 'SBTUITestTunnelServer'
+  s.dependency 'SBTUITestTunnelCommon'
 end
