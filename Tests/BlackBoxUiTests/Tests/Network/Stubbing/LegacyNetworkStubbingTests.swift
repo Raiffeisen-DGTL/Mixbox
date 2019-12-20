@@ -1,4 +1,3 @@
-// TODO: Share with GrayBoxUiTests
 final class LegacyNetworkStubbingTests: BaseNetworkMockingTestCase {
     private let stubbedText = "This is a stubbed string"
     
@@ -36,40 +35,41 @@ final class LegacyNetworkStubbingTests: BaseNetworkMockingTestCase {
     
     func test___requests_are_stubbed_in_correct_order() {
         openScreen(screen)
+            .waitUntilViewIsLoaded()
         
         legacyNetworking.stubbing
             .stub(urlPattern: "localhost")
             .thenReturn(string: "1")
         
-        screen.localhost.tap()
+        screen.localhost.withoutTimeout.tap()
         screen.info.assertHasText("1")
         
         legacyNetworking.stubbing
             .stub(urlPattern: "localho")
             .thenReturn(string: "2")
         
-        screen.localhost.tap()
+        screen.localhost.withoutTimeout.tap()
         screen.info.assertHasText("2")
         
         legacyNetworking.stubbing
             .stub(urlPattern: ".*")
             .thenReturn(string: "3")
         
-        screen.localhost.tap()
+        screen.localhost.withoutTimeout.tap()
         screen.info.assertHasText("3")
         
         legacyNetworking.stubbing
             .stub(urlPattern: "localho")
             .thenReturn(string: "4")
         
-        screen.localhost.tap()
+        screen.localhost.withoutTimeout.tap()
         screen.info.assertHasText("4")
         
         legacyNetworking.stubbing
             .stub(urlPattern: "localho")
             .thenReturn(string: "5")
         
-        screen.localhost.tap()
+        screen.localhost.withoutTimeout.tap()
         screen.info.assertHasText("5")
     }
     

@@ -56,7 +56,9 @@ final class XcuiElementSnapshot: ElementSnapshot {
     }
     
     var accessibilityPlaceholderValue: String? {
-        return xcElementSnapshot.placeholderValue as String?
+        return EnhancedAccessibilityLabel.originalAccessibilityPlaceholderValue(
+            accessibilityPlaceholderValue: xcElementSnapshot.placeholderValue
+        )
     }
     
     var accessibilityLabel: String {
@@ -107,7 +109,7 @@ final class XcuiElementSnapshot: ElementSnapshot {
     // MARK: - Private
     
     private var enhancedAccessibilityLabel: EnhancedAccessibilityLabel? {
-        return EnhancedAccessibilityLabel.fromAccessibilityLabel(xcElementSnapshot.label as? String)
+        return EnhancedAccessibilityLabel.fromAccessibilityLabel(xcElementSnapshot.label)
     }
     
     private var additionalAttributes: [NSObject: Any]  {

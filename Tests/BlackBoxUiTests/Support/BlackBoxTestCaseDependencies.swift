@@ -81,7 +81,7 @@ final class BlackBoxTestCaseDependencies: DependencyCollectionRegisterer {
                     testFailureRecorder: try di.resolve(),
                     ipcClient: ipcClient ?? AlwaysFailingIpcClient(),
                     stepLogger: try di.resolve(),
-                    pollingConfiguration: .reduceWorkload,
+                    pollingConfiguration: try di.resolve(),
                     elementFinder: elementFinder,
                     applicationProvider: applicationProvider,
                     eventGenerator: XcuiEventGenerator(
@@ -92,7 +92,8 @@ final class BlackBoxTestCaseDependencies: DependencyCollectionRegisterer {
                     waiter: try di.resolve(),
                     signpostActivityLogger: try di.resolve(),
                     snapshotsDifferenceAttachmentGenerator: try di.resolve(),
-                    snapshotsComparatorFactory: try di.resolve()
+                    snapshotsComparatorFactory: try di.resolve(),
+                    applicationQuiescenceWaiter: try di.resolve()
                 )
             }
             

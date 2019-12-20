@@ -1,6 +1,7 @@
 import MixboxUiTestsFoundation
 import XCTest
 
+// TODO: Test every kind of hierarchy
 final class LocatorsTests: TestCase {
     override func precondition() {
         super.precondition()
@@ -36,13 +37,19 @@ final class LocatorsTests: TestCase {
     // MARK: - label
     
     func test___finding_element_by_label___passes___when_element_exists() {
-        assertExists { $0.label == "label_with_accessibilityLabel_accessibilityLabel" }
+        assertExists { $0.accessibilityLabel == "label_with_accessibilityLabel_accessibilityLabel" }
     }
     
     // MARK: - value
     
     func test___finding_element_by_value___passes___when_element_exists() {
-        assertExists { $0.value == "label_with_accessibilityValue_accessibilityValue" }
+        assertExists { $0.accessibilityValue == "label_with_accessibilityValue_accessibilityValue" }
+    }
+    
+    // MARK: - accessibilityPlaceholderValue
+    
+    func test___finding_element_by_accessibilityPlaceholderValue___passes___when_element_exists() {
+        assertExists { $0.accessibilityPlaceholderValue == "text_field_placeholder" }
     }
     
     // MARK: - customValues

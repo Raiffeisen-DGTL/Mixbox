@@ -1,4 +1,5 @@
 import MixboxUiTestsFoundation
+import MixboxFoundation
 
 public final class XcuiApplicationStateProvider: ApplicationStateProvider {
     private let applicationProvider: ApplicationProvider
@@ -7,8 +8,9 @@ public final class XcuiApplicationStateProvider: ApplicationStateProvider {
         self.applicationProvider = applicationProvider
     }
     
-    public func applicationState() -> ApplicationState {
-        switch applicationProvider.application.state {
+    public func applicationState() throws -> ApplicationState {
+        let state = applicationProvider.application.state
+        switch state {
         case .unknown:
             return .unknown
         case .notRunning:
@@ -19,6 +21,8 @@ public final class XcuiApplicationStateProvider: ApplicationStateProvider {
             return .runningBackground
         case .runningForeground:
             return .runningForeground
+        @unknown default:
+            throw UnsupportedEnumCaseError(state)
         }
     }
 }

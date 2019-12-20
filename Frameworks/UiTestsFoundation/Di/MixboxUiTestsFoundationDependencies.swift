@@ -21,6 +21,18 @@ public final class MixboxUiTestsFoundationDependencies: DependencyCollectionRegi
     
     // swiftlint:disable:next function_body_length
     public func register(dependencyRegisterer di: DependencyRegisterer) {
+        di.register(type: ExtendedStackTraceProvider.self) { di in
+            ExtendedStackTraceProviderImpl(
+                stackTraceProvider: try di.resolve(),
+                extendedStackTraceEntryFromCallStackSymbolsConverter: try di.resolve()
+            )
+        }
+        di.register(type: StackTraceProvider.self) { _ in
+            StackTraceProviderImpl()
+        }
+        di.register(type: ExtendedStackTraceEntryFromStackTraceEntryConverter.self) { _ in
+            ExtendedStackTraceEntryFromStackTraceEntryConverterImpl()
+        }
         di.register(type: NotificationsApplicationPermissionSetterFactory.self) { di in
             AlwaysFailingNotificationsApplicationPermissionSetterFactory(
                 testFailureRecorder: try di.resolve()
@@ -47,15 +59,29 @@ public final class MixboxUiTestsFoundationDependencies: DependencyCollectionRegi
                 runLoopSpinnerFactory: try di.resolve()
             )
         }
-        di.register(type: RunLoopSpinnerFactory.self) { _ in
-            RunLoopSpinnerFactoryImpl(
-                runLoopModesStackProvider: RunLoopModesStackProviderImpl()
+        di.register(type: PhotoStubber.self) { di in
+            PhotoStubberImpl(
+                stubImagesProvider: try di.resolve(),
+                tccDbApplicationPermissionSetterFactory: try di.resolve(),
+                photoSaver: try di.resolve() ,
+                testFailureRecorder: try di.resolve()
             )
+        }
+        di.register(type: RunLoopSpinnerFactory.self) { di in
+            RunLoopSpinnerFactoryImpl(
+                runLoopModesStackProvider: try di.resolve()
+            )
+        }
+        di.register(type: RunLoopModesStackProvider.self) { _ in
+            RunLoopModesStackProviderImpl()
         }
         di.register(type: RunLoopSpinningWaiter.self) { di in
             RunLoopSpinningWaiterImpl(
                 runLoopSpinnerFactory: try di.resolve()
             )
+        }
+        di.register(type: Waiter.self) { di in
+            try di.resolve() as RunLoopSpinningWaiter
         }
         di.register(type: LazilyInitializedIpcClient.self) { _ in
             LazilyInitializedIpcClient()
@@ -86,15 +112,7 @@ public final class MixboxUiTestsFoundationDependencies: DependencyCollectionRegi
             XctAttachmentsAdderImpl()
         }
         di.register(type: SignpostActivityLogger.self) { _ in
-            if #available(iOS 12.0, *) {
-                return SignpostActivityLoggerImpl(
-                    signpostLoggerFactory: SignpostLoggerFactoryImpl(),
-                    subsystem: "mixbox",
-                    category: "mixbox" // TODO: Find a use for it
-                )
-            } else {
-                return DisabledSignpostActivityLogger()
-            }
+            DisabledSignpostActivityLogger()
         }
         di.register(type: SnapshotsDifferenceAttachmentGenerator.self) { di in
             SnapshotsDifferenceAttachmentGeneratorImpl(
@@ -125,6 +143,9 @@ public final class MixboxUiTestsFoundationDependencies: DependencyCollectionRegi
                 waiter: try di.resolve(),
                 iosVersionProvider: try di.resolve()
             )
+        }
+        di.register(type: PollingConfiguration.self) { _ in
+            PollingConfiguration.reduceWorkload
         }
     }
 }

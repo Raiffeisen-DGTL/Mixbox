@@ -20,6 +20,7 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
     public let tableViewSwizzler: TableViewSwizzler
     public let fakeCellManager: FakeCellManager
     public let keyboardEventInjector: KeyboardEventInjector
+    public let scrollViewIdlingResourceSwizzler: ScrollViewIdlingResourceSwizzler
     
     private let networkMockingBootstrappingType: NetworkMockingBootstrappingType
     
@@ -122,6 +123,10 @@ public final class InAppServicesDependenciesFactoryImpl: InAppServicesDependenci
             handleHidEventSwizzler: HandleHidEventSwizzlerImpl(
                 assertingSwizzler: assertingSwizzler
             )
+        )
+        
+        scrollViewIdlingResourceSwizzler = ScrollViewIdlingResourceSwizzlerImpl(
+            assertingSwizzler: assertingSwizzler
         )
     }
     

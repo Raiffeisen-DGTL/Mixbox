@@ -9,12 +9,10 @@ extension XCUIElement {
     }
     
     public var originalAccessibilityLabel: String {
-        if let enhancedAccessibilityLabel = enhancedAccessibilityLabel {
-            let xctestLabelValueIfAccessibilityLabelIsNil = ""
-            return enhancedAccessibilityLabel.originalAccessibilityLabel ?? xctestLabelValueIfAccessibilityLabelIsNil
-        } else {
-            return label
-        }
+        let originalAccessibilityLabel = EnhancedAccessibilityLabel.originalAccessibilityLabel(accessibilityLabel: label)
+        let xctestLabelValueIfAccessibilityLabelIsNil = ""
+        
+        return originalAccessibilityLabel ?? xctestLabelValueIfAccessibilityLabelIsNil
     }
     
     public var isDefinitelyHidden: Bool {

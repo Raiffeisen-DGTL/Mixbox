@@ -105,7 +105,25 @@ public final class AccessibilityLabelFunctionReplacementImpl: AccessibilityLabel
         let unwrappedOriginalAccessibilityLabel = unwrapAccessibilityLabel(
             originalAccessibilityLabel: originalImplementation()
         )
-        
+
+        let uiAccessibilityElementMockView = NSClassFromString("UIAccessibilityElementMockView")!
+
+        if this?.isKind(of: uiAccessibilityElementMockView) == true, let value = this?.perform(NSSelectorFromString("view")) as? Unmanaged<AnyObject>, let view = value.takeUnretainedValue() as? UIView {
+
+            let label = EnhancedAccessibilityLabel(
+                originalAccessibilityLabel: unwrappedOriginalAccessibilityLabel as String?,
+                accessibilityValue: view.accessibilityValue,
+                uniqueIdentifier: view.uniqueIdentifier,
+                isDefinitelyHidden: view.isDefinitelyHidden,
+                text: view.testabilityValue_text(),
+                customValues: view.testability_customValues.dictionary
+            )
+
+            AccessibilityUniqueObjectMap.shared.register(object: view)
+
+            return (label.toAccessibilityLabel() as NSString?) ?? unwrappedOriginalAccessibilityLabel
+        }
+
         guard let view = this as? UIView else {
             return unwrappedOriginalAccessibilityLabel
         }
