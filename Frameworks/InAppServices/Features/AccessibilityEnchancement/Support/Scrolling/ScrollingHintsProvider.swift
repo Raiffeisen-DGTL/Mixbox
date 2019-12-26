@@ -176,7 +176,7 @@ final class ScrollingHintsProvider {
                 // to the collection view
                 pointer = parentCollectionView
             } else if let cell = viewFromPointer as? UITableViewCell,
-                let parentTableView = cell.mb_fakeCellInfo?.parentTableView
+                let parentTableView = (cell.mb_fakeCellInfo?.parentTableView ?? cell.superview as? UITableView)
             {
                 let visibleTableRect = CGRect(origin: parentTableView.contentOffset, size: parentTableView.bounds.size)
                 //Already visible, nothing to do
