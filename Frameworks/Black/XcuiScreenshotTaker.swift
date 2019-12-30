@@ -6,6 +6,10 @@ public final class XcuiScreenshotTaker: ScreenshotTaker {
     }
     
     public func takeScreenshot() -> UIImage? {
-        return XCUIScreen.main.screenshot().image
+        return ObjectiveCExceptionCatcher.catch(try: { () -> (UIImage) in
+            return XCUIScreen.main.screenshot().image
+        }, catch: { (exception) -> (UIImage) in
+            return UIImage()
+        })
     }
 }
