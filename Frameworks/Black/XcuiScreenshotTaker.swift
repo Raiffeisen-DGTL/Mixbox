@@ -1,5 +1,6 @@
 import MixboxUiTestsFoundation
 import XCTest
+import MixboxFoundation
 
 public final class XcuiScreenshotTaker: ScreenshotTaker {
     public init() {
